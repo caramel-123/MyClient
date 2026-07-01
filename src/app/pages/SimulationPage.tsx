@@ -1434,21 +1434,33 @@ export default function SimulationPage() {
       const isActive = i === phaseIndex;
       const isDone = i < phaseIndex;
       const isLocked = !tabUnlocked[p] && !isDone && !isActive;
+      // Prompt and Build tabs pulse orange when there's a pending client revision
+      const needsRevision = clientRequestedRevision && !clientApprovedQA && (p === "prompt" || p === "build");
       return (
         <div key={p} className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => !isLocked && jumpToPhase(p)}
-            title={isLocked ? `Complete ${PHASE_LABELS[PHASE_ORDER[i - 1]]} first` : undefined}
+            title={
+              needsRevision ? "Client requested revision — update design here first" :
+              isLocked ? `Complete ${PHASE_LABELS[PHASE_ORDER[i - 1]]} first` : undefined
+            }
             className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all"
             style={{
-              background: isActive ? phaseColor : isDone ? "#E8F5E9" : isLocked ? "#F0F2F5" : "#F5F5F5",
-              color: isActive ? "#fff" : isDone ? "#2E7D32" : isLocked ? "#C4C4C4" : "#65676B",
+              background: needsRevision ? "#F97316" : isActive ? phaseColor : isDone ? "#E8F5E9" : isLocked ? "#F0F2F5" : "#F5F5F5",
+              color: needsRevision ? "#fff" : isActive ? "#fff" : isDone ? "#2E7D32" : isLocked ? "#C4C4C4" : "#65676B",
               cursor: isLocked ? "not-allowed" : "pointer",
               opacity: isLocked ? 0.7 : 1,
+              boxShadow: needsRevision ? "0 0 0 3px rgba(249,115,22,0.3)" : undefined,
+              animation: needsRevision && !isActive ? "pulse 1.5s ease-in-out infinite" : undefined,
             }}
           >
-            {isDone && <CheckCircle className="w-3 h-3" />}
-            {isLocked && (
+            {needsRevision && !isActive && (
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            )}
+            {!needsRevision && isDone && <CheckCircle className="w-3 h-3" />}
+            {!needsRevision && isLocked && (
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
