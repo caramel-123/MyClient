@@ -738,7 +738,7 @@ export default function SimulationPage() {
   // Detect client agreement on proposal
   if (phase === "proposal" && proposalSentToClient) {
     const lastReply = reply.toLowerCase();
-    const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na/.test(lastReply);
+    const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na|mag-start|magsimula|tara na|oo sige|go lang|go na tayo|push na|push through|approved|pag-usapan na natin|gawin na|simulan na|tuloy na|let's do it|start mo na|start ka na|okay go|okay sige|sige go|oo go|go tayo/.test(lastReply);
     if (agreed) setClientAgreedProposal(true);
   }
 
@@ -805,7 +805,7 @@ export default function SimulationPage() {
     try {
       const reply = await sendToGemini(newMessages, persona, "proposal");
       // Check for immediate agreement
-      const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na/.test(reply.toLowerCase());
+      const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na|mag-start|magsimula|tara na|oo sige|go lang|go na tayo|push na|push through|approved|pag-usapan na natin|gawin na|simulan na|tuloy na|let's do it|start mo na|start ka na|okay go|okay sige|sige go|oo go|go tayo/.test(reply.toLowerCase());
       if (agreed) setClientAgreedProposal(true);
       const chunks = splitClientMessage(reply);
       let acc: Message[] = [...newMessages];
