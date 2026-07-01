@@ -1,152 +1,61 @@
-# Bankero 💚
+# MyClient — SparkFest 2026
 
-> **Decentralized Credit Scoring & Micro-Lending on Stellar**
-> Giving unbanked Filipinos a verifiable, on-chain financial identity — based on actual behavior, not a bank account balance.
+> AI-powered freelance client simulation platform for Filipino students and youth.
 
-![CI](https://github.com/caramel-123/bankero/actions/workflows/ci.yml/badge.svg)
+MyClient is a SparkFest 2026 hackathon entry that lets students practice real-world client communication by chatting with an AI that behaves exactly like a real Filipino client — vague at first, adds scope creep, requests revisions, and eventually pays out or walks away.
 
-🌐 **Live App:** [https://bankero.vercel.app](https://bankero.vercel.app)
-🎥 **Demo Video:** [Watch on YouTube](https://youtu.be/xhMVzAy9vIE?feature=shared)
-📊 **Pitch Deck:** [View on Canva](https://canva.link/bgjjy7fbpq9yswg)
-
----
-
-## Deployed Contract Addresses (Stellar Testnet)
-
-<img width="952" height="613" alt="Bankero contracts on Stellar Testnet" src="https://github.com/user-attachments/assets/3e851654-99bb-4971-9802-cd7b319d5ca5" />
-
-| Contract | Address |
-|----------|---------|
-| `credit_score` | `CCXRTCZ2OKHYMRAHZHR4BSSBIWK6TXY25WFPUJLIJE4NHK6MPV4YQMQE` |
-| `loan_registry` | `CCDH6T2RI3BBKXVN6RUILBFJBFUQRQKXUKI6WCGRB3GIFU2CQX3GDPTI` |
-| `vouching` | `CAQG6H57IFKD642FRELBZNVKAWRLZYQMCIUHXQBFBIIXRMWHTJHFBQ4F` |
-
-> Verify on Stellar Explorer:
-> - [credit_score on stellar.expert](https://stellar.expert/explorer/testnet/contract/CCXRTCZ2OKHYMRAHZHR4BSSBIWK6TXY25WFPUJLIJE4NHK6MPV4YQMQE)
-> - [loan_registry on stellar.expert](https://stellar.expert/explorer/testnet/contract/CCDH6T2RI3BBKXVN6RUILBFJBFUQRQKXUKI6WCGRB3GIFU2CQX3GDPTI)
-> - [vouching on stellar.expert](https://stellar.expert/explorer/testnet/contract/CAQG6H57IFKD642FRELBZNVKAWRLZYQMCIUHXQBFBIIXRMWHTJHFBQ4F)
+**Theme:** Building Smarter, Safer, and More Inclusive Communities
+**SDGs:** SDG 9 (Industry, Innovation & Infrastructure) · SDG 11 (Sustainable Cities & Communities)
+**Google Technology:** Gemini 2.0 Flash API
 
 ---
 
-## Project Description
+## The Problem
 
-Bankero is a decentralized credit scoring and micro-lending platform built on **Stellar** and **Soroban smart contracts**, designed to give unbanked Filipinos a verifiable, on-chain financial identity. By aggregating behavioral signals — loan repayments, wallet activity, community vouches, and anchor-linked remittances — into a transparent 300–850 credit score, Bankero enables peer-to-peer micro-loans without requiring a bank account, payslip, or credit card. The score lives on the blockchain, is owned by the borrower, and is verifiable by any lender, anywhere.
+Most CS/IT students graduate knowing how to code but not how to communicate with clients — how to ask the right questions, scope a project, write a proposal, handle revisions, and deliver professionally. MyClient bridges that gap through simulation.
 
-Bankero builds that credit history **on-chain**, using four behavioral signals:
+## How It Works
 
-| Signal | Weight | Source |
-|--------|--------|--------|
-| 🔁 Repayment history | 40% | Loan repayment records |
-| 💳 Transaction activity | 25% | Stellar wallet activity |
-| 👥 Community vouches | 20% | Peers staking XLM to vouch |
-| 🏦 Anchor links | 15% | GCash / Maya / remittance accounts |
+The AI messages **you** first — just like a real client would.
 
-The result is a **300–850 credit score** stored transparently on the blockchain — verifiable by any lender, anywhere, without needing a bank statement.
+```
+AI Client: "Hi! Pwede mo ba akong tulungan? Gusto ko magpagawa ng website
+            para sa aking food business. Budget ko ₱5,000. 😊"
 
----
+Tip: Ask what problem they're currently facing before jumping to solutions.
 
-## Project Vision
+You: "Sure po! Bago tayo magsimula, pwede po bang ikwento sa akin yung
+      inyong business at ang project na gusto ninyong gawin?"
 
-Most of the world's unbanked are not untrustworthy — they're just **invisible** to the formal financial system. Bankero's vision is to make financial reputation portable and self-sovereign: a score earned through real behavior, not institutional gatekeeping.
-
-We believe that if someone has been repaying debts in their community for years, their neighbors know it — even if no bank does. Bankero turns that social trust into verifiable on-chain proof, starting in the Philippines and eventually expandable to any community where peer trust precedes institutional credit.
-
-The long-term goal is a world where any person with a smartphone can walk up to a lender — whether that's a neighbor, an NGO, or a rural cooperative — and say: *"Here is my Bankero score. Here is my history. Verify it yourself on Stellar."*
+AI Client: "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na
+            karinderya dito sa aming barangay — 'Santos Karinderya'..."
+```
 
 ---
 
-## Features
+## Phases
 
-### For Borrowers
-- 🔐 **Connect with Freighter** — wallet-based identity, no username/password needed
-- 📊 **Live credit score** — real-time 300–850 score with breakdown by factor
-- 💸 **Apply for micro-loans** — loan limits unlock as your score grows (₱500 → ₱50,000)
-- 🔗 **Link GCash / Maya / remittance** accounts to boost anchor score
-- 🤝 **Community vouching** — ask trusted peers to stake XLM for you
-- 📄 **Credit Certificate** — downloadable PDF proof of creditworthiness for banks
-- 🔍 **Stellar Explorer** — one-click view of wallet on the blockchain
-
-### For Lenders
-- 🏦 **Email/password dashboard** (Supabase Auth)
-- 📋 **Review borrower profiles** — full credit score, repayment history, tier
-- ✅ **Approve / Reject / Disburse** loans with real XLM payments via Freighter
-- ⚡ **Auto-default detection** — overdue loans flagged automatically, score adjusted
-- 📈 **Portfolio analytics** — repayment rate, default rate, total disbursed
-
-### Credit Score Tiers
-
-| Score | Tier | Max Loan | Interest |
-|-------|------|----------|----------|
-| 300–449 | Starting Out | ₱500 | 8% |
-| 450–549 | Fair | ₱1,500 | 7% |
-| 550–649 | Developing | ₱3,000 | 6% |
-| 650–749 | Good | ₱7,500 | 5% |
-| 750–799 | Trusted | ₱15,000 | 4.5% |
-| 800–849 | Excellent | ₱25,000 | 4% |
-| 850 | Elite | ₱50,000 | 3.5% |
+| Phase | What Happens |
+|-------|-------------|
+| **Discovery** | AI client messages you first with a project brief. Ask the right questions to uncover requirements. |
+| **Proposal** | Fill out an 11-section project proposal with AI-generated drafts and a proposal coach. |
+| **QA Review** | Submit a deliverable link. AI switches to reviewer mode — gives specific UI/UX feedback and introduces scope creep. |
+| **Delivery** | Final negotiation. AI accepts, requests revisions, or walks away. Simulated payment released on success. |
 
 ---
 
-## Loan Cycle Walkthrough
+## Key Features
 
-A complete end-to-end flow — from a borrower applying for a loan to earning a Credit Certificate after repayment.
-
-### Step 1 — Borrower: Apply for a Loan
-
-The borrower connects their Freighter wallet, checks their current credit score, and submits a loan application. Loan limits unlock automatically based on their score tier — no bank visit, no paperwork.
-
-<img width="1074" height="719" alt="Borrower views credit score on dashboard" src="https://github.com/user-attachments/assets/e64f657d-2088-4ed1-9898-321d674e8525" />
-<img width="1021" height="722" alt="Borrower fills out loan application with amount and term" src="https://github.com/user-attachments/assets/7d152986-63a3-4646-b8d3-0805eb71ff54" />
-<img width="1024" height="725" alt="Loan submitted and awaiting lender review" src="https://github.com/user-attachments/assets/1d2be0ed-9eb1-4319-af57-8b4d43accdcf" />
-<img width="1021" height="723" alt="Borrower loan tracking page showing pending status" src="https://github.com/user-attachments/assets/c5f9eaeb-b5d7-48f9-9c58-4cea2a2fef8e" />
-
----
-
-### Step 2 — Lender: Review, Approve, and Disburse
-
-The lender logs into the dashboard and reviews the borrower's full credit profile — score breakdown, repayment history, and community vouches. After approving, the lender disburses XLM directly to the borrower's wallet via Freighter. Every action is recorded on-chain.
-
-<img width="1016" height="716" alt="Lender dashboard showing pending applications with borrower credit scores" src="https://github.com/user-attachments/assets/dfd70249-0d78-40e0-b6d6-f3434c8596db" />
-<img width="1021" height="716" alt="Lender reviews borrower credit profile and approves loan" src="https://github.com/user-attachments/assets/1ec76fa6-0d18-4e27-b307-44f94d8ca481" />
-<img width="1025" height="719" alt="Lender disburses XLM to borrower via Freighter — Stellar transaction confirmed" src="https://github.com/user-attachments/assets/34a4ac77-0ec5-4ee4-a2a4-f896231d7430" />
-
----
-
-### Step 3 — Borrower: Repay and Earn a Credit Certificate
-
-The borrower receives the XLM and repays through the platform before the due date. Each on-time repayment raises their credit score. Once they have repayment history, they can download a **Credit Certificate** — a verifiable, printable proof of creditworthiness backed by Stellar blockchain data.
-
-<img width="1074" height="719" alt="Borrower receives XLM and views active loan details" src="https://github.com/user-attachments/assets/b9e97c6a-b518-440d-99bb-7cc70ab01f32" />
-<img width="1022" height="717" alt="Borrower downloads verifiable Credit Certificate as PDF" src="https://github.com/user-attachments/assets/4542ec24-7584-42fc-a93c-16cd674ae0d0" />
-<img width="1022" height="720" alt="Credit score increases after successful on-time repayment" src="https://github.com/user-attachments/assets/a1932a98-9381-46eb-84f8-4a7b6a88290c" />
-<img width="1018" height="720" alt="Borrower repays loan before due date" src="https://github.com/user-attachments/assets/f99dbba9-4082-48f9-b767-2ebd76201411" />
-
----
-
-### On-Chain Transaction Proof
-
-10+ real contract invocations on Stellar Testnet — `update_score` called for multiple wallets, verifiable on Stellar Explorer.
-
-<img width="714" height="635" alt="Stellar Explorer showing 10+ contract transactions on credit_score contract" src="https://github.com/user-attachments/assets/9e05e5fa-762c-4f2a-924e-f6c8b784d9f7" />
-
----
-
-### Mobile Responsive Design
-
-Bankero is fully responsive at 390px viewport — tested on iPhone-sized screens via the built-in Mobile View toggle.
-
-<img width="264" height="509" alt="Bankero mobile view — borrower dashboard" src="https://github.com/user-attachments/assets/a2a68cf3-4b1d-444d-b7b4-06c041514759" />
-<img width="265" height="514" alt="Bankero mobile view — loan application" src="https://github.com/user-attachments/assets/fb698962-eeb4-4008-9026-722428163ce6" />
-<img width="260" height="511" alt="Bankero mobile view — lender dashboard" src="https://github.com/user-attachments/assets/43fa77db-6db8-4c1b-a003-8ec316f58cb9" />
-<img width="253" height="501" alt="Bankero mobile view — credit certificate" src="https://github.com/user-attachments/assets/0cb59df3-021b-48a1-a5b5-dbd9ae548712" />
-
----
-
-### Analytics & Monitoring
-
-Live visitor tracking via Vercel Analytics — installed and active on [bankero.vercel.app](https://bankero.vercel.app).
-
-<img width="624" height="655" alt="Vercel Analytics dashboard showing visitors and page views" src="https://github.com/user-attachments/assets/7b0e54ac-bce1-48ad-bb8b-9e61bb87dbab" />
+- **4 AI Client Personas** — Maria Santos (karinderya), Kuya Jun (online shop), Ate Bea (fashion reseller), Sir Ramon (tutoring)
+- **Gemini 2.0 Flash** — powers all client responses in Taglish with realistic personality
+- **Multi-bubble typing** — client replies arrive in 2–3 separate bubbles with natural delays, like a real person
+- **TipBar** — coaching tips with 3 clickable response options (Standard, Short, Casual)
+- **11-section Proposal Builder** — AI-generated professional paragraphs per section, lightbulb recall from discovery
+- **AI Proposal Coach** — separate Gemini-powered chatbot for writing and refining the proposal
+- **Deal Walkaway** — client escalates anger on rude messages and terminates the deal after 3 strikes
+- **Scope Creep Engine** — client randomly adds features mid-project like a real client would
+- **Invalid Link Detection** — submitting a non-URL in QA triggers client rejection with per-persona reactions
+- **Score Screen** — Communication, Scope Management, and Professionalism scores after each session
 
 ---
 
@@ -154,401 +63,44 @@ Live visitor tracking via Vercel Analytics — installed and active on [bankero.
 
 | Layer | Technology |
 |-------|-----------|
-| Blockchain | Stellar Testnet + Soroban Smart Contracts |
-| Wallet | Freighter ([@stellar/freighter-api](https://www.npmjs.com/package/@stellar/freighter-api)) |
-| Smart Contracts | Rust / Soroban (3 contracts) |
-| Frontend | React + TypeScript + Vite |
-| Database | Supabase (Postgres + Auth + RLS) |
-| Payments | Stellar Horizon API (real XLM disbursement) |
-| Deployment | Vercel |
+| Frontend | React + TypeScript + Vite + Tailwind CSS |
+| AI | Gemini 2.0 Flash (REST API, browser-safe) |
+| Routing | React Router v7 |
+| Icons | Lucide React |
+| Hosting | Vercel |
 
 ---
 
-## Smart Contracts (Soroban)
-
-Three contracts deployed on **Stellar Testnet**:
-
-| Contract | ID | Purpose |
-|----------|-----|---------|
-| `credit_score` | `CCXRTCZ2OKHYMRAHZHR4BSSBIWK6TXY25WFPUJLIJE4NHK6MPV4YQMQE` | Aggregate scores, store borrower records |
-| `loan_registry` | `CCDH6T2RI3BBKXVN6RUILBFJBFUQRQKXUKI6WCGRB3GIFU2CQX3GDPTI` | Loan lifecycle management |
-| `vouching` | `CAQG6H57IFKD642FRELBZNVKAWRLZYQMCIUHXQBFBIIXRMWHTJHFBQ4F` | Staked community vouches |
-
----
-
-## CI/CD Pipeline
-
-Every push to `main` automatically runs tests and builds via **GitHub Actions**.
-
-### Pipeline steps
-1. Install dependencies (`npm ci`)
-2. Run all unit tests (`npm test`)
-3. Build production bundle (`npm run build`)
-4. Upload build artifact
-
-<img width="1866" height="1136" alt="GitHub Actions CI pipeline passing" src="https://github.com/user-attachments/assets/aa526a77-b4b4-44fb-b91f-be1118f7b1a3" />
-
----
-
-## Test Suite
-
-**38 tests — all passing** across 2 test files.
-
-```
- RUN  v4.1.9
-
- Test Files  2 passed (2)
-      Tests  38 passed (38)
-   Duration  421ms
-```
-
-| Test File | Coverage |
-|-----------|----------|
-| `stellar.test.ts` | `scoreTier()`, `scorePercent()`, `nextScoreTier()`, `SCORE_TIERS` array, `formatWallet()`, `formatPeso()`, `pesoToXlm()` |
-| `loanStore.test.ts` | `computeLocalScore()`, Laplace smoothing formula, `daysUntil()`, `formatDate()` |
-
-Run tests locally:
+## Getting Started
 
 ```bash
-cd frontend
-npm test
-```
-
----
-
-## Transaction Hash (Contract Interaction)
-
-A real testnet transaction from a loan disbursement — a lender sending XLM to a borrower's wallet via the platform:
-
-| Field | Value |
-|-------|-------|
-| **Transaction Hash** | `4ed1ef6bb9ed2c3cf4738417a190fce61cce5cca5b1ed77cbacd35df48907369` |
-| **Type** | XLM Payment — Loan Disbursement |
-| **Network** | Stellar Testnet |
-| **Amount** | 5 XLM (₱500 loan) |
-| **Date** | 2026-06-16 10:56:18 UTC |
-| **View on Explorer** | [View on stellar.expert](https://stellar.expert/explorer/testnet/tx/4ed1ef6bb9ed2c3cf4738417a190fce61cce5cca5b1ed77cbacd35df48907369) |
-
-When a lender clicks **Disburse**, Bankero:
-1. Connects to the lender's Freighter wallet
-2. Builds a Stellar payment transaction (borrower receives real testnet XLM)
-3. Opens Freighter for the lender to review and sign
-4. Submits to Stellar Horizon (testnet)
-5. Shows the transaction hash with a link to [stellar.expert](https://stellar.expert/explorer/testnet)
-
-**Conversion rate (testnet):** ₱100 = 1 XLM
-
----
-
-## Why Stellar?
-
-- **Fast & cheap** — 5-second finality, near-zero fees (perfect for micro-transactions)
-- **Soroban smart contracts** — Rust-based, auditable, on-chain logic
-- **Anchor ecosystem** — built-in support for connecting real-world assets (GCash, remittances)
-- **Freighter wallet** — easy browser extension for Filipino users, no seed phrase complexity
-- **Transparent** — every loan, repayment, and vouch is visible on-chain
-
----
-
-## Score Formula
-
-```
-final_score = 300 + (
-  repayment_score × 40 +
-  tx_score        × 25 +
-  vouch_score     × 20 +
-  anchor_score    × 15
-) × 550 / 10000
-```
-
-**Repayment score** uses Laplace smoothing to prevent a single repayment from giving 100%:
-
-```
-repayment_score = (loans_repaid / (total_loans + 2)) × 100 − (defaults × 15)
-```
-
----
-
-## Setup Instructions
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) v18+
-- [Freighter Wallet](https://freighter.app/) browser extension
-- A funded Stellar **testnet** account (use [Stellar Friendbot](https://friendbot.stellar.org))
-
----
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/caramel-123/bankero.git
-cd bankero
-```
-
-### 2. Install Frontend Dependencies
-
-```bash
-cd frontend
 npm install
-```
-
-### 3. Configure Environment Variables
-
-```bash
-cp frontend/.env.example frontend/.env
-```
-
-Fill in your values:
-
-```env
-# Stellar
-VITE_STELLAR_NETWORK=testnet
-VITE_SOROBAN_RPC=https://soroban-testnet.stellar.org
-
-# Deployed contract IDs (already on testnet — use these)
-VITE_CREDIT_SCORE_CONTRACT_ID=CCXRTCZ2OKHYMRAHZHR4BSSBIWK6TXY25WFPUJLIJE4NHK6MPV4YQMQE
-VITE_LOAN_REGISTRY_CONTRACT_ID=CCDH6T2RI3BBKXVN6RUILBFJBFUQRQKXUKI6WCGRB3GIFU2CQX3GDPTI
-VITE_VOUCHING_CONTRACT_ID=CAQG6H57IFKD642FRELBZNVKAWRLZYQMCIUHXQBFBIIXRMWHTJHFBQ4F
-
-# Supabase — create a free project at supabase.com
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-> **Note:** For local development, create your own free Supabase project at [supabase.com](https://supabase.com) and run the migration below.
-
-### 4. Set Up Supabase Database
-
-In your Supabase project, go to **SQL Editor** and run:
-
-```sql
--- Users (borrower profiles)
-CREATE TABLE public.users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  wallet_address TEXT UNIQUE NOT NULL,
-  display_name TEXT,
-  kyc_verified BOOLEAN DEFAULT FALSE,
-  anchor_linked BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Lenders (email/password auth)
-CREATE TABLE public.lenders (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  auth_user_id UUID,
-  wallet_address TEXT UNIQUE NOT NULL,
-  display_name TEXT NOT NULL,
-  contact_email TEXT,
-  max_loan_xlm INTEGER DEFAULT 10000,
-  interest_rate NUMERIC DEFAULT 5,
-  min_credit_score INTEGER DEFAULT 300,
-  bio TEXT,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Loans
-CREATE TABLE public.loans (
-  id TEXT PRIMARY KEY,
-  borrower_wallet TEXT NOT NULL,
-  lender_wallet TEXT,
-  amount INTEGER NOT NULL,
-  interest INTEGER NOT NULL DEFAULT 0,
-  total INTEGER NOT NULL,
-  purpose TEXT,
-  term INTEGER NOT NULL,
-  notes TEXT,
-  status TEXT NOT NULL DEFAULT 'Pending'
-    CHECK (status IN ('Pending','Approved','Disbursed','Repaid','Defaulted','Rejected')),
-  applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  due_at TIMESTAMPTZ,
-  approved_at TIMESTAMPTZ,
-  disbursed_at TIMESTAMPTZ,
-  repaid_at TIMESTAMPTZ,
-  defaulted_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Credit score cache
-CREATE TABLE public.score_cache (
-  wallet_address TEXT PRIMARY KEY,
-  repayment_score INTEGER DEFAULT 0,
-  total_loans INTEGER DEFAULT 0,
-  loans_repaid INTEGER DEFAULT 0,
-  loans_defaulted INTEGER DEFAULT 0,
-  last_updated TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.lenders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.score_cache ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies
-CREATE POLICY "public read users"         ON public.users       FOR SELECT USING (true);
-CREATE POLICY "public upsert users"       ON public.users       FOR INSERT WITH CHECK (true);
-CREATE POLICY "anon read loans"           ON public.loans       FOR SELECT TO anon USING (true);
-CREATE POLICY "anon insert loans"         ON public.loans       FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon update loans"         ON public.loans       FOR UPDATE TO anon USING (true) WITH CHECK (true);
-CREATE POLICY "auth read loans"           ON public.loans       FOR SELECT TO authenticated USING (true);
-CREATE POLICY "auth update loans"         ON public.loans       FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "public read lenders"       ON public.lenders     FOR SELECT USING (true);
-CREATE POLICY "auth insert lenders"       ON public.lenders     FOR INSERT TO authenticated WITH CHECK (auth_user_id = auth.uid());
-CREATE POLICY "auth update lenders"       ON public.lenders     FOR UPDATE TO authenticated USING (auth_user_id = auth.uid()) WITH CHECK (auth_user_id = auth.uid());
-CREATE POLICY "public read score_cache"   ON public.score_cache FOR SELECT USING (true);
-CREATE POLICY "public upsert score_cache" ON public.score_cache FOR ALL USING (true) WITH CHECK (true);
-```
-
-### 5. Run Locally
-
-```bash
-cd frontend
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
-
-### 6. Fund Your Testnet Wallet
-
-1. Install [Freighter](https://freighter.app/) and switch to **Testnet**
-2. Copy your wallet address
-3. Visit [https://friendbot.stellar.org/?addr=YOUR_ADDRESS](https://friendbot.stellar.org/?addr=YOUR_ADDRESS) to get free testnet XLM
-
----
-
-## How to Use
-
-### As a Borrower
-1. Go to [bankero.vercel.app](https://bankero.vercel.app) → click **Connect Freighter Wallet**
-2. Your starting credit score is **300**
-3. Explore your score breakdown in **My Score**
-4. Link a GCash / Maya account to boost your anchor score
-5. Ask a community member to vouch for you
-6. Go to **Apply Loan** — loan limits unlock as your score grows
-7. Track repayments in **My Loans**
-8. Download your **Credit Certificate** once you have repayment history
-
-### As a Lender
-1. Go to [bankero.vercel.app/lender](https://bankero.vercel.app/lender)
-2. Create an account with email + password
-3. Connect your **Freighter wallet** (needed for disbursing XLM)
-4. Review pending applications — view each borrower's full credit profile
-5. Approve → Disburse (Freighter popup will confirm the XLM payment)
-6. Mark loans as Defaulted if overdue → borrower's score is penalized
-
----
-
-## Project Structure
+To use the Gemini API (live AI responses), add your key to `.env`:
 
 ```
-bankero/
-├── contracts/               # Soroban smart contracts (Rust)
-│   ├── credit_score/        # Credit scoring logic
-│   ├── loan_registry/       # Loan lifecycle management
-│   └── vouching/            # Community stake & vouch
-├── frontend/                # React + TypeScript app
-│   ├── src/
-│   │   ├── pages/           # All screens
-│   │   │   ├── Landing.tsx
-│   │   │   ├── Login.tsx
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── ScoreDetails.tsx
-│   │   │   ├── LoanApply.tsx
-│   │   │   ├── LoanTracking.tsx
-│   │   │   ├── Vouch.tsx
-│   │   │   ├── LenderDashboard.tsx
-│   │   │   └── CreditCertificate.tsx
-│   │   ├── lib/
-│   │   │   ├── stellar.ts      # Stellar SDK + Freighter helpers + XLM payment
-│   │   │   ├── supabase.ts     # Supabase client + auth + data layer
-│   │   │   ├── loanStore.ts    # Loan state + score updates
-│   │   │   └── anchorStore.ts  # GCash/Maya integration
-│   │   └── hooks/
-│   │       ├── useWallet.ts    # Freighter wallet hook
-│   │       └── useScore.ts     # Live credit score hook
-│   └── .env.example
-└── supabase/
-    └── migrations/             # SQL schema migrations
+VITE_GEMINI_API_KEY=your_key_here
 ```
 
----
-
-## User Onboarding
-
-We are collecting real user feedback to guide the next phase of Bankero's development.
-
-**[Fill out the Bankero User Onboarding & Feedback Form →](https://docs.google.com/forms/d/e/1FAIpQLSf4d5o2ryMU9h1_ANlqES3Xr92xnU9Sq4AcS-QUDOZYlJCEiQ/viewform)**
-
-The form collects:
-- Full name and email
-- Stellar wallet address
-- Features used (Borrow / Lend / Vouch / Credit Certificate)
-- Overall experience rating (1–5)
-- What users liked most
-- What users want improved
-
-All responses are exported and maintained in **[`docs/bankero-user-feedback.xlsx`](docs/bankero-user-feedback.xlsx)** and serve as the primary record for product iteration decisions.
+Without an API key, the app runs in **demo mode** with pre-written persona responses — fully functional for demos.
 
 ---
 
-## Improvement Plan (Based on User Feedback)
+## SparkFest 2026 Deliverables
 
-The following improvements are planned for Phase 2, informed directly by user feedback:
-
-### 1. Mobile App (React Native)
-**Feedback signal:** Users on mobile report the web app is functional but a native app feel is missing.
-**Plan:** Build a React Native wrapper using Lobstr wallet for users without desktop browsers. Priority feature for borrowers in rural areas.
-
-### 2. GCash / Maya Anchor Automation
-**Feedback signal:** Users want their GCash history to automatically update their score without waiting for admin verification.
-**Plan:** Integrate Stellar SEP-6/24 anchor protocol to automate anchor score updates directly from GCash and Maya transaction history.
-
-### 3. Simplified Onboarding for Non-Tech Users
-**Feedback signal:** New users unfamiliar with Stellar wallets find the Freighter setup confusing.
-**Plan:** Add a step-by-step in-app wallet setup guide with screenshots and an explainer video linked from the dashboard for first-time users.
-
-### 4. Filipino Language Support
-**Feedback signal:** Several users requested full Filipino (Tagalog / Cebuano) UI translation.
-**Plan:** Add i18n support with Filipino as the default language option, English as secondary. All CTAs, error messages, and score explanations translated.
-
-### 5. SMS / Push Repayment Reminders
-**Feedback signal:** Borrowers want reminders before their loan due date to avoid accidental defaults.
-**Plan:** Integrate Supabase Edge Functions with an SMS gateway (e.g. Semaphore PH) to send repayment reminders 3 days and 1 day before the due date.
-
-### 6. Lender Marketplace
-**Feedback signal:** Borrowers want to choose from multiple lenders and compare interest rates.
-**Plan:** Build a lender discovery page where borrowers can browse verified lenders, their rates, and specializations before submitting a loan application.
+- [x] Working prototype (Phase 1 Discovery + Phase 3 QA fully functional)
+- [x] Gemini API integrated as the AI client brain
+- [x] 4 client personas with distinct personalities and Taglish dialogue
+- [x] Public GitHub repository with commit history
+- [ ] 3-minute video demo
+- [ ] One-page project document (PDF)
 
 ---
 
-## Future Scope
+## Team
 
-Bankero is currently an MVP targeting the Stellar testnet. The roadmap ahead:
+**Melfred Bernabe** — Solo developer, UI/UX, Gemini integration, client communication simulation design
 
-### Near-Term (Post-Hackathon)
-- **Mainnet deployment** — migrate all 3 contracts from testnet to Stellar mainnet with real XLM
-- **GCash / Maya anchor integration** — automate anchor score updates via Stellar SEP-6/24 instead of manual admin attestation
-- **Mobile app** — React Native wrapper using Lobstr wallet for users without desktop browsers
-- **SMS / USSD fallback** — for users without smartphones, enable loan status checks via text
-
-### Medium-Term
-- **Lender marketplace** — multiple lenders compete for borrowers, driving interest rates down through transparency
-- **Score decay automation** — scheduled Soroban invocations for inactive wallet score decay (currently admin-triggered)
-- **Vouch rewards** — on-chain distribution of the 1% voucher incentive when a borrower repays
-- **Group lending** — support for bayanihan-style group loans where repayment responsibility is shared
-
-### Long-Term
-- **Cross-border portability** — OFW (overseas Filipino worker) score contributions from remittance corridors
-- **Institutional lender API** — let rural banks and MFIs (microfinance institutions) query Bankero scores via REST
-- **Reputation export** — let borrowers export their score proof to other DeFi platforms on Stellar
-- **DAO governance** — community-governed score weight parameters, replacing admin control with token-weighted voting
-
----
-
-## License
-
-MIT © 2026 Mel Bernabe — Built for the Stellar White Belt Challenge
+*Built with Claude Code · SparkFest 2026*
