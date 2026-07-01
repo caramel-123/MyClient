@@ -7,29 +7,36 @@ import {
  MoreHorizontal, Wallet, Copy, Check, X, Sparkles, FileText, GripVertical,
 } from "lucide-react";
 import {
- CLIENT_PERSONAS, sendToGemini, generateHint,
- generateContextualTip, generateContextualResponse, generateProjectPrompt,
- addToWallet, getWalletBalance,
- PROPOSAL_PARTS, getProposalRecall, generateProposalSection, sendToProposalAssistant,
- DEAL_LOST_MARKER,
- type Message, type ClientPersona,
+  CLIENT_PERSONAS, sendToGemini, generateHint,
+  generateContextualTip, generateContextualResponse, generateProjectPrompt,
+  addToWallet, getWalletBalance,
+  PROPOSAL_PARTS, getProposalRecall, generateProposalSection, sendToProposalAssistant,
+  DEAL_LOST_MARKER, coveredTopicIndex, getPersonaTopics,
+  type Message, type ClientPersona,
 } from "../lib/gemini";
 
-type Phase = "discovery" |"proposal" |"qa" |"delivery";
+type Phase = "discovery" | "proposal" | "prompt" | "build" | "qa" | "delivery";
 
 const PHASE_LABELS: Record<Phase, string> = {
- discovery: "Discovery",
- proposal: "Proposal",
- qa: "QA Review",
- delivery: "Delivery",
+  discovery: "Discovery",
+  proposal: "Proposal",
+  prompt: "Prompt",
+  build: "Build",
+  qa: "QA Review",
+  delivery: "Delivery",
 };
-const PHASE_ORDER: Phase[] = ["discovery", "proposal", "qa", "delivery"];
+const PHASE_ORDER: Phase[] = ["discovery", "proposal", "prompt", "build", "qa", "delivery"];
 const PHASE_COLORS: Record<Phase, string> = {
- discovery: "#3B82F6",
- proposal: "#F59E0B",
- qa: "#8B5CF6",
- delivery: "#10B981",
+  discovery: "#3B82F6",
+  proposal: "#F59E0B",
+  prompt: "#EC4899",
+  build: "#8B5CF6",
+  qa: "#06B6D4",
+  delivery: "#10B981",
 };
+
+const GEMINI_API_KEY_BUILD = import.meta.env.VITE_GEMINI_API_KEY || "";
+const GEMINI_URL_BUILD = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY_BUILD}`;
 
 const SIDEBAR_CHATS = CLIENT_PERSONAS.map((p, i) => ({
  id: i,
@@ -552,10 +559,18 @@ export default function SimulationPage() {
  const [walletBalance, setWalletBalance] = useState(getWalletBalance);
  const [showEarnToast, setShowEarnToast] = useState(false);
  const [earnAmount, setEarnAmount] = useState( "");
- const [projectPrompt, setProjectPrompt] = useState<string | null>(null);
- const [showPromptModal, setShowPromptModal] = useState(false);
- const [dealLost, setDealLost] = useState(false);
- const [dealLostMessage, setDealLostMessage] = useState( "");
+  const [projectPrompt, setProjectPrompt] = useState<string | null>(null);
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [dealLost, setDealLost] = useState(false);
+  const [dealLostMessage, setDealLostMessage] = useState("");
+  // New phase state
+  const [proposalSentToClient, setProposalSentToClient] = useState(false);
+  const [clientAgreedProposal, setClientAgreedProposal] = useState(false);
+  const [uiPrompt, setUiPrompt] = useState("");
+  const [generatingPrompt, setGeneratingPrompt] = useState(false);
+  const [generatedHtml, setGeneratedHtml] = useState("");
+  const [buildLink, setBuildLink] = useState("");
+  const [building, setBuilding] = useState(false);
  const [sidebarWidth, setSidebarWidth] = useState(288);
  const [proposalSplit, setProposalSplit] = useState(55); // percentage of main area
  const [proposalChatPanelWidth, setProposalChatPanelWidth] = useState(260);
@@ -589,11 +604,16 @@ export default function SimulationPage() {
  setProjectPrompt(null);
  setDealLost(false);
  setDealLostMessage( "");
- setProposalFields(Array(11).fill( ""));
- setProposalChat([{ role: "model", text: "Hi! I'm your AI proposal coach. Ask me anything about what to write in each section — or paste a draft and I'll help you improve it." }]);
- setProposalChatInput( "");
- if (inputRef.current) inputRef.current.style.height = "auto";
- }, [persona]);
+  setProposalFields(Array(11).fill(""));
+  setProposalChat([{ role: "model", text: "Hi! I'm your AI proposal coach. Ask me anything about what to write in each section — or paste a draft and I'll help you improve it." }]);
+  setProposalChatInput("");
+  setProposalSentToClient(false);
+  setClientAgreedProposal(false);
+  setUiPrompt("");
+  setGeneratedHtml("");
+  setBuildLink("");
+  if (inputRef.current) inputRef.current.style.height = "auto";
+  }, [persona]);
 
  useEffect(() => {
  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -671,12 +691,19 @@ export default function SimulationPage() {
  }
  }
 
- const updated = accMessages;
- const userCount = updated.filter((m) => m.role === "user").length;
- const modelCount = updated.filter((m) => m.role === "model").length;
- setHint(generateHint(phase, modelCount - 1));
- setContextualTip(generateContextualTip(updated, phase, persona));
- setContextualResponse(generateContextualResponse(updated, phase, persona));
+  const updated = accMessages;
+  const userCount = updated.filter((m) => m.role === "user").length;
+  const modelCount = updated.filter((m) => m.role === "model").length;
+  setHint(generateHint(phase, modelCount - 1));
+  setContextualTip(generateContextualTip(updated, phase, persona));
+  setContextualResponse(generateContextualResponse(updated, phase, persona));
+
+  // Detect client agreement on proposal
+  if (phase === "proposal" && proposalSentToClient) {
+    const lastReply = reply.toLowerCase();
+    const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na/.test(lastReply);
+    if (agreed) setClientAgreedProposal(true);
+  }
 
  const minExchanges = phase === "discovery" ? 7 : 2;
  if (userCount >= minExchanges) setShowSubmit(true);
@@ -688,51 +715,124 @@ export default function SimulationPage() {
  }
  }
 
- function advancePhase() {
- const nextIndex = PHASE_ORDER.indexOf(phase) + 1;
+  // Tab unlock rules
+  const allTopicsCovered = coveredTopicIndex(messages, persona) >= getPersonaTopics(persona).length;
+  const tabUnlocked: Record<Phase, boolean> = {
+    discovery: true,
+    proposal: allTopicsCovered,
+    prompt: clientAgreedProposal,
+    build: uiPrompt.length > 0,
+    qa: buildLink.length > 0,
+    delivery: false, // unlocked by QA flow
+  };
 
- if (nextIndex >= PHASE_ORDER.length) {
- // Project complete — pay out wallet
- const earned = addToWallet(persona.budget);
- setWalletBalance(earned);
- setEarnAmount(persona.budget);
- setShowEarnToast(true);
- setTimeout(() => {
- navigate(`/score?comm=${scores.comm}&scope=${scores.scope}&prof=${scores.prof}&project=${activeId}&client=${encodeURIComponent(persona.name)}&budget=${encodeURIComponent(persona.budget)}`);
- }, 2000);
- return;
- }
+  function advancePhase() {
+    const nextIndex = PHASE_ORDER.indexOf(phase) + 1;
+    if (nextIndex >= PHASE_ORDER.length) {
+      const earned = addToWallet(persona.budget);
+      setWalletBalance(earned);
+      setEarnAmount(persona.budget);
+      setShowEarnToast(true);
+      setTimeout(() => {
+        navigate(`/score?comm=${scores.comm}&scope=${scores.scope}&prof=${scores.prof}&project=${activeId}&client=${encodeURIComponent(persona.name)}&budget=${encodeURIComponent(persona.budget)}`);
+      }, 2000);
+      return;
+    }
+    const next = PHASE_ORDER[nextIndex];
+    if (!tabUnlocked[next] && next !== "proposal") return; // guard locked tabs
+    jumpToPhase(next);
+  }
 
- const next = PHASE_ORDER[nextIndex];
- setPhase(next);
- setShowSubmit(false);
- setContextualTip(null);
- setContextualResponse(null);
- setHint(null);
- setShowDeliverableInput(false);
+  async function sendProposalToClient() {
+    const assembled = proposalFields.every((f) => f.trim()) ? proposalFields.join("\n\n") : "Here is my project proposal for your review.";
+    const proposalText = `Hi po! Here is my project proposal:\n\n${assembled}\n\nKindly review and let me know if you have any questions or adjustments.`;
+    const userMsg: Message = { role: "user", text: proposalText };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setProposalSentToClient(true);
+    setLoading(true);
+    try {
+      const reply = await sendToGemini(newMessages, persona, "proposal");
+      // Check for immediate agreement
+      const agreed = /deal|sige|okay na|go na|agreed|tayo na|magsimula na|let's go|lets go|proceed|start na/.test(reply.toLowerCase());
+      if (agreed) setClientAgreedProposal(true);
+      const chunks = splitClientMessage(reply);
+      let acc: Message[] = [...newMessages];
+      for (let i = 0; i < chunks.length; i++) {
+        const delay = Math.max(1800, Math.min(5000, chunks[i].length * 35));
+        await new Promise((r) => setTimeout(r, delay));
+        acc = [...acc, { role: "model" as const, text: chunks[i] }];
+        setMessages([...acc]);
+        if (i < chunks.length - 1) { await new Promise((r) => setTimeout(r, 500)); setLoading(true); }
+      }
+    } catch {
+      setMessages((prev) => [...prev, { role: "model", text: "Sorry, may technical issue. Try again!" }]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
- const systemMsgs: Record<string, string> = {
- proposal: "Okay! Please send me your project proposal — yung timeline, deliverables, at pricing.",
- qa: "Nice! I'm ready to review your work. Please send me the link to your prototype or deliverable.",
- delivery: "Okay, final check na! Send me the final version para ma-review ko.",
- };
- if (systemMsgs[next]) {
- setMessages((prev) => [...prev, { role: "model", text: systemMsgs[next] }]);
- }
+  async function generateUiPrompt() {
+    setGeneratingPrompt(true);
+    const proposalText = proposalFields.join("\n\n");
+    const systemPrompt = `You are a senior UI/UX designer. Based on the project proposal below, write a detailed, actionable prompt for building the website UI. Include: layout description, color scheme, typography, key sections per page, component details, and interaction notes. Write it as a direct instruction to a developer/AI builder. Be specific and professional.\n\nProposal:\n${proposalText}`;
+    try {
+      if (!GEMINI_API_KEY_BUILD) {
+        setUiPrompt(`Design a professional website for ${persona.name}'s ${persona.business}. Pages: Home (hero with CTA, about section, featured services), ${proposalFields[2] || "Services"}, Contact. Color scheme: warm and professional matching the brand. Mobile-first, clean layout, easy navigation. Use card-based sections, clear typography hierarchy, and prominent call-to-action buttons. All pages should have consistent header and footer.`);
+        return;
+      }
+      const res = await fetch(GEMINI_URL_BUILD, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: systemPrompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 800 } }),
+      });
+      const data = await res.json();
+      const text: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      setUiPrompt(text);
+    } catch {
+      setUiPrompt(`Design a professional website for ${persona.name}'s ${persona.business}. Include all pages discussed in the proposal with a clean, mobile-first layout.`);
+    } finally {
+      setGeneratingPrompt(false);
+    }
+  }
 
- if (next === "qa") {
- setShowDeliverableInput(true);
- // Generate the build prompt when moving to QA (deal is closed, build phase begins)
- const prompt = generateProjectPrompt(persona, messages);
- setProjectPrompt(prompt);
- setShowPromptModal(true);
- }
+  async function generateWebsite() {
+    setBuilding(true);
+    const buildPromptText = uiPrompt || `Build a professional website for ${persona.name}'s ${persona.business}.`;
+    const systemPrompt = `You are an expert web developer. Generate a complete, beautiful, single-file HTML website based on this design brief. Requirements:\n- Use inline CSS only (no external stylesheets except Google Fonts via @import)\n- Include all pages as sections with smooth scroll navigation\n- Make it mobile responsive\n- Use the brand colors and style described\n- Include realistic placeholder content from the proposal\n- Make it look like a real, polished website\n\nDesign Brief:\n${buildPromptText}\n\nClient: ${persona.name} — ${persona.business}\n\nReturn ONLY the complete HTML code, nothing else.`;
+    try {
+      if (!GEMINI_API_KEY_BUILD) {
+        const fallbackHtml = generateFallbackHtml(persona);
+        setGeneratedHtml(fallbackHtml);
+        const blob = new Blob([fallbackHtml], { type: "text/html" });
+        setBuildLink(URL.createObjectURL(blob));
+        return;
+      }
+      const res = await fetch(GEMINI_URL_BUILD, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: systemPrompt }] }], generationConfig: { temperature: 0.8, maxOutputTokens: 4000 } }),
+      });
+      const data = await res.json();
+      let html: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+      // Strip markdown code fences if present
+      html = html.replace(/^```html\n?/i, "").replace(/\n?```$/i, "").trim();
+      setGeneratedHtml(html);
+      const blob = new Blob([html], { type: "text/html" });
+      setBuildLink(URL.createObjectURL(blob));
+    } catch {
+      const fallbackHtml = generateFallbackHtml(persona);
+      setGeneratedHtml(fallbackHtml);
+      const blob = new Blob([fallbackHtml], { type: "text/html" });
+      setBuildLink(URL.createObjectURL(blob));
+    } finally {
+      setBuilding(false);
+    }
+  }
 
- if (next === "proposal") {
- setContextualTip( "Send your proposal — include timeline, deliverables, and a pricing breakdown.");
- setContextualResponse( "Hi po! Here's my project proposal:\n\n Deliverables: Home, Menu, About, Contact pages\n⏱ Timeline: 5 working days\n Pricing: ₱5,000 (2 rounds of revisions included)\n\nLet me know if you'd like any adjustments!");
- }
- }
+  function generateFallbackHtml(p: ClientPersona): string {
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${p.name} — ${p.business}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;color:#1a1a1a}nav{background:#1a1a1a;color:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}nav h1{font-size:1.2rem}nav a{color:#fff;text-decoration:none;margin-left:1.5rem;font-size:.9rem}.hero{padding:5rem 2rem;text-align:center;background:linear-gradient(135deg,#F5C542,#fff)}.hero h2{font-size:2.5rem;margin-bottom:1rem}.hero p{font-size:1.1rem;color:#555;max-width:600px;margin:0 auto 2rem}.btn{display:inline-block;padding:.8rem 2rem;background:#1a1a1a;color:#fff;border-radius:2rem;text-decoration:none;font-weight:600}.section{padding:4rem 2rem;max-width:1000px;margin:0 auto}.section h3{font-size:1.8rem;margin-bottom:1.5rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem}.card{padding:1.5rem;border:1px solid #eee;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}.footer{background:#1a1a1a;color:#ccc;text-align:center;padding:2rem;margin-top:4rem}</style></head><body><nav><h1>${p.name}</h1><div><a href="#home">Home</a><a href="#services">Services</a><a href="#contact">Contact</a></div></nav><div class="hero" id="home"><h2>Welcome to ${p.name}</h2><p>${p.business} — professional, reliable, and ready to serve you.</p><a href="#contact" class="btn">Get in Touch</a></div><div class="section" id="services"><h3>Our Services</h3><div class="cards"><div class="card"><h4>Quality Service</h4><p>We deliver the best for our clients.</p></div><div class="card"><h4>Professional Team</h4><p>Experienced and dedicated professionals.</p></div><div class="card"><h4>Affordable Rates</h4><p>Great value within your budget.</p></div></div></div><div class="section" id="contact"><h3>Contact Us</h3><p>Budget: ${p.budget} &nbsp;|&nbsp; Reach out to get started.</p></div><div class="footer"><p>&copy; 2026 ${p.name}. All rights reserved.</p></div></body></html>`;
+  }
 
  const invalidLinkReplies: Record<string, string[]> = {
 "Maria Santos": [
@@ -810,18 +910,21 @@ export default function SimulationPage() {
  setProposalFields((prev) => prev.map((f, idx) => (idx === i ? v : f)));
  }
 
- function jumpToPhase(p: Phase) {
- setPhase(p);
- setContextualTip(null);
- setContextualResponse(null);
- setHint(null);
- setShowSubmit(false);
- setShowDeliverableInput(p === "qa");
- if (p === "proposal") {
- setContextualTip( "Send your proposal — include timeline, deliverables, and a pricing breakdown.");
- setContextualResponse( "Hi po! Here's my project proposal:\n\n Deliverables: Home, Menu, About, Contact pages\n⏱ Timeline: 5 working days\n Pricing: ₱5,000 (2 rounds of revisions included)\n\nLet me know if you'd like any adjustments!");
- }
- }
+  function jumpToPhase(p: Phase) {
+    if (!tabUnlocked[p] && p !== "delivery") return; // locked
+    setPhase(p);
+    setContextualTip(null);
+    setContextualResponse(null);
+    setHint(null);
+    setShowSubmit(false);
+    setShowDeliverableInput(p === "qa");
+    if (p === "qa" && !messages.some((m) => m.text.includes("ready to review"))) {
+      setMessages((prev) => [...prev, { role: "model", text: "Nice! I'm ready to review your work. Please send me the link to your prototype or deliverable." }]);
+    }
+    if (p === "delivery") {
+      setMessages((prev) => [...prev, { role: "model", text: "Okay, final check na! Send me the final version para ma-review ko." }]);
+    }
+  }
 
  function startSidebarResize(e: React.MouseEvent<HTMLDivElement>) {
  e.preventDefault();
@@ -1221,26 +1324,38 @@ export default function SimulationPage() {
  </div>
  </div>
 
- {/* Phase stepper — clickable */}
- <div className= "flex-shrink-0 flex items-center gap-1 px-4 py-2 border-b overflow-x-auto" style={{ borderColor: "rgba(0,0,0,0.06)", background: "#FAFAFA" }}>
- {PHASE_ORDER.map((p, i) => (
- <div key={p} className= "flex items-center gap-1 flex-shrink-0">
- <button
- onClick={() => jumpToPhase(p)}
- className= "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all hover:opacity-80 active:scale-95"
- style={{
- background: i === phaseIndex ? phaseColor : i < phaseIndex ?"#E8F5E9" : "#F0F2F5",
- color: i === phaseIndex ?"#fff" : i < phaseIndex ?"#2E7D32" : "#65676B",
- cursor: "pointer",
- }}
- >
- {i < phaseIndex && <CheckCircle className= "w-3 h-3" />}
- {PHASE_LABELS[p]}
- </button>
- {i < PHASE_ORDER.length - 1 && <ChevronRight className= "w-3 h-3 flex-shrink-0" style={{ color: "#C4C4C4" }} />}
- </div>
- ))}
- </div>
+  {/* Phase stepper — locked tabs shown greyed with lock */}
+  <div className="flex-shrink-0 flex items-center gap-1 px-4 py-2 border-b overflow-x-auto" style={{ borderColor: "rgba(0,0,0,0.06)", background: "#FAFAFA" }}>
+    {PHASE_ORDER.map((p, i) => {
+      const isActive = i === phaseIndex;
+      const isDone = i < phaseIndex;
+      const isLocked = !tabUnlocked[p] && !isDone && !isActive;
+      return (
+        <div key={p} className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={() => !isLocked && jumpToPhase(p)}
+            title={isLocked ? `Complete ${PHASE_LABELS[PHASE_ORDER[i - 1]]} first` : undefined}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all"
+            style={{
+              background: isActive ? phaseColor : isDone ? "#E8F5E9" : isLocked ? "#F0F2F5" : "#F5F5F5",
+              color: isActive ? "#fff" : isDone ? "#2E7D32" : isLocked ? "#C4C4C4" : "#65676B",
+              cursor: isLocked ? "not-allowed" : "pointer",
+              opacity: isLocked ? 0.7 : 1,
+            }}
+          >
+            {isDone && <CheckCircle className="w-3 h-3" />}
+            {isLocked && (
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+            )}
+            {PHASE_LABELS[p]}
+          </button>
+          {i < PHASE_ORDER.length - 1 && <ChevronRight className="w-3 h-3 flex-shrink-0" style={{ color: "#C4C4C4" }} />}
+        </div>
+      );
+    })}
+  </div>
 
  {/* CONTENT AREA: split in proposal phase, single chat otherwise */}
  {phase === "proposal" ? (
@@ -1253,15 +1368,37 @@ export default function SimulationPage() {
  {/* Chat ↔ proposal resize handle */}
  <ResizeHandle onMouseDown={startProposalChatPanelResize} />
 
- {/* Middle: proposal form (resizable) */}
- <div className= "flex flex-col min-w-0" style={{ width: `${proposalSplit}%` }}>
- <ProposalFormPanel
- persona={persona}
- messages={messages}
- fields={proposalFields}
- onFieldChange={updateProposalField}
- />
- </div>
+  {/* Middle: proposal form (resizable) */}
+  <div className="flex flex-col min-w-0" style={{ width: `${proposalSplit}%` }}>
+    <ProposalFormPanel
+      persona={persona}
+      messages={messages}
+      fields={proposalFields}
+      onFieldChange={updateProposalField}
+    />
+    {/* Send to Client button */}
+    <div className="flex-shrink-0 px-3 py-2 border-t" style={{ borderColor: "rgba(0,0,0,0.08)", background: "#FAFAFA" }}>
+      {clientAgreedProposal ? (
+        <button
+          onClick={() => jumpToPhase("prompt")}
+          className="w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2"
+          style={{ background: "#EC4899", color: "#fff" }}
+        >
+          <Sparkles className="w-4 h-4" /> Client agreed! Proceed to Prompt
+        </button>
+      ) : (
+        <button
+          onClick={sendProposalToClient}
+          disabled={loading || !proposalFields.every((f) => f.trim())}
+          className="w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-40"
+          style={{ background: proposalSentToClient ? "#F59E0B" : "#1a1a1a", color: "#fff" }}
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          {proposalSentToClient ? "Waiting for client response..." : "Send Proposal to Client"}
+        </button>
+      )}
+    </div>
+  </div>
 
  {/* Proposal resize handle */}
  <ResizeHandle onMouseDown={startProposalResize} />
@@ -1351,12 +1488,139 @@ export default function SimulationPage() {
  </div>
  </div>
  </div>
- ) : (
- renderChatBody()
- )}
- </div>
+  ) : phase === "prompt" ? (
+    /* ── PROMPT TAB ── */
+    <div className="flex-1 overflow-y-auto p-6" style={{ background: "#FAFAFA" }}>
+      <div className="max-w-2xl mx-auto space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#FCE7F3" }}>
+            <Sparkles className="w-5 h-5" style={{ color: "#EC4899" }} />
+          </div>
+          <div>
+            <p className="font-bold text-base" style={{ fontFamily: "Poppins, sans-serif" }}>Generate UI/UX Prompt</p>
+            <p className="text-xs" style={{ color: "#65676B" }}>Turn your approved proposal into a detailed build prompt</p>
+          </div>
+        </div>
+        <div className="rounded-2xl p-4 text-sm leading-relaxed" style={{ background: "#FFF3E0", border: "1px solid #FED7AA" }}>
+          <p className="font-semibold mb-1" style={{ color: "#9A3412" }}>Client Agreement Received</p>
+          <p style={{ color: "#7C2D12" }}>{persona.name} has agreed to your proposal. Now generate the UI/UX prompt to guide building the website.</p>
+        </div>
+        {!uiPrompt ? (
+          <button
+            onClick={generateUiPrompt}
+            disabled={generatingPrompt}
+            className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            style={{ background: "#EC4899", color: "#fff" }}
+          >
+            {generatingPrompt ? <><Loader2 className="w-5 h-5 animate-spin" /> Generating prompt...</> : <><Sparkles className="w-5 h-5" /> Generate UI/UX Prompt</>}
+          </button>
+        ) : (
+          <div className="space-y-4">
+            <div className="rounded-2xl overflow-hidden border" style={{ borderColor: "rgba(0,0,0,0.1)" }}>
+              <div className="flex items-center justify-between px-4 py-2.5" style={{ background: "#1a1a1a" }}>
+                <span className="text-xs font-semibold text-white">UI/UX Build Prompt</span>
+                <button
+                  onClick={() => navigator.clipboard.writeText(uiPrompt)}
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+                  style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
+                >
+                  <Copy className="w-3 h-3" /> Copy
+                </button>
+              </div>
+              <textarea
+                value={uiPrompt}
+                onChange={(e) => setUiPrompt(e.target.value)}
+                className="w-full p-4 text-sm outline-none resize-none"
+                style={{ minHeight: "220px", background: "#F8F9FA", color: "#1a1a1a", fontFamily: "monospace", fontSize: "12px" }}
+              />
+            </div>
+            <button
+              onClick={() => jumpToPhase("build")}
+              className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#8B5CF6", color: "#fff" }}
+            >
+              Proceed to Build <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : phase === "build" ? (
+    /* ── BUILD TAB ── */
+    <div className="flex-1 overflow-y-auto p-6" style={{ background: "#FAFAFA" }}>
+      <div className="max-w-3xl mx-auto space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#EDE9FE" }}>
+            <FileText className="w-5 h-5" style={{ color: "#8B5CF6" }} />
+          </div>
+          <div>
+            <p className="font-bold text-base" style={{ fontFamily: "Poppins, sans-serif" }}>Build Website</p>
+            <p className="text-xs" style={{ color: "#65676B" }}>Generate a website from your UI/UX prompt — then submit the link for QA</p>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-semibold" style={{ color: "#65676B" }}>UI/UX Prompt (edit if needed)</label>
+          <textarea
+            value={uiPrompt}
+            onChange={(e) => setUiPrompt(e.target.value)}
+            className="w-full p-4 text-sm outline-none resize-none rounded-2xl border"
+            style={{ minHeight: "120px", background: "#fff", borderColor: "rgba(0,0,0,0.12)", fontFamily: "monospace", fontSize: "12px" }}
+          />
+        </div>
+        {!generatedHtml ? (
+          <button
+            onClick={generateWebsite}
+            disabled={building || !uiPrompt.trim()}
+            className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            style={{ background: "#8B5CF6", color: "#fff" }}
+          >
+            {building ? <><Loader2 className="w-5 h-5 animate-spin" /> Building website...</> : <><Sparkles className="w-5 h-5" /> Generate Website</>}
+          </button>
+        ) : (
+          <div className="space-y-4">
+            <div className="rounded-2xl overflow-hidden border shadow-sm" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+              <div className="flex items-center justify-between px-4 py-2" style={{ background: "#1a1a1a" }}>
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">{["#FF5F57","#FEBC2E","#28C840"].map((c,i) => <div key={i} className="w-3 h-3 rounded-full" style={{background:c}} />)}</div>
+                  <span className="text-xs" style={{ color: "#9CA3AF" }}>preview — {persona.name.toLowerCase().replace(" ","")}.myclient.app</span>
+                </div>
+                <a href={buildLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}>
+                  <ExternalLink className="w-3 h-3" /> Open
+                </a>
+              </div>
+              <iframe
+                srcDoc={generatedHtml}
+                sandbox="allow-scripts allow-same-origin"
+                className="w-full border-0"
+                style={{ height: "420px" }}
+                title="Website Preview"
+              />
+            </div>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+              <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: "#16A34A" }} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold" style={{ color: "#15803D" }}>Build link ready</p>
+                <p className="text-xs truncate" style={{ color: "#166534" }}>{buildLink}</p>
+              </div>
+              <button onClick={() => navigator.clipboard.writeText(buildLink)} className="flex-shrink-0 text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: "#16A34A", color: "#fff" }}>Copy</button>
+            </div>
+            <button
+              onClick={() => jumpToPhase("qa")}
+              className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
+              style={{ background: "#06B6D4", color: "#fff" }}
+            >
+              Submit to QA Review <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  ) : (
+    renderChatBody()
+  )}
+  </div>
 
- {/* INFO PANEL */}
+  {/* INFO PANEL */}
  {showInfo && (
  <aside className= "hidden lg:flex flex-col w-72 xl:w-80 flex-shrink-0 border-l overflow-y-auto" style={{ borderColor: "rgba(0,0,0,0.1)", background: "#FFFFFF" }}>
  <div className= "p-5 space-y-6">

@@ -1007,11 +1007,11 @@ const PERSONA_TOPICS: Record<string, TopicEntry[]> = {
   ],
 };
 
-function getPersonaTopics(persona: ClientPersona): TopicEntry[] {
- return PERSONA_TOPICS[persona.name] ?? PERSONA_TOPICS["Maria Santos"];
+export function getPersonaTopics(persona: ClientPersona): TopicEntry[] {
+  return PERSONA_TOPICS[persona.name] ?? PERSONA_TOPICS["Maria Santos"];
 }
 
-function coveredTopicIndex(messages: Message[], persona: ClientPersona): number {
+export function coveredTopicIndex(messages: Message[], persona: ClientPersona): number {
  const all = messages.map((m) => m.text).join( "").toLowerCase();
  const topics = getPersonaTopics(persona);
  // Find the first topic NOT yet covered
