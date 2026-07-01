@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import {
  MessageCircle,
@@ -371,7 +371,7 @@ function ProblemSection() {
  return (
  <section className= "py-28" style={{ background: "#FFF9F1" }}>
  <div className= "max-w-6xl mx-auto px-6">
- <div className= "text-center mb-16 space-y-4">
+ <div className= "reveal text-center mb-16 space-y-4">
  <p className= "text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: "Inter, sans-serif", color: "#F5C542" }}>The Gap</p>
  <h2
  className= "text-4xl lg:text-5xl font-bold"
@@ -386,10 +386,11 @@ function ProblemSection() {
  </div>
 
  <div className= "grid grid-cols-1 md:grid-cols-3 gap-6">
- {problems.map((p) => (
+ {problems.map((p, i) => (
  <div
  key={p.title}
- className= "p-8 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl group"
+ className= "reveal p-8 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl group"
+ style={{ transitionDelay: `${i * 120}ms` } as React.CSSProperties}
  style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
  >
  <div className= "w-12 h-12 rounded-2xl flex items-center justify-center mb-5 transition-colors group-hover:scale-110" style={{ background: "rgba(245,197,66,0.15)", color: "#B8941E" }}>
@@ -445,7 +446,7 @@ function HowItWorks() {
  return (
  <section className= "py-28" style={{ background: "#F8F2E7" }}>
  <div className= "max-w-6xl mx-auto px-6">
- <div className= "text-center mb-16 space-y-4">
+ <div className= "reveal text-center mb-16 space-y-4">
  <p className= "text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: "Inter, sans-serif", color: "#F5C542" }}>The Journey</p>
  <h2 className= "text-4xl lg:text-5xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>
  The Full Freelance Lifecycle
@@ -459,7 +460,8 @@ function HowItWorks() {
  {steps.map((s, i) => (
  <div
  key={s.n}
- className= "relative p-7 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl"
+ className= "reveal relative p-7 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl"
+ style={{ transitionDelay: `${i * 100}ms` } as React.CSSProperties}
  style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
  >
  {/* Step number */}
@@ -543,7 +545,7 @@ function Features() {
  return (
  <section className= "py-28" style={{ background: "#FFF9F1" }}>
  <div className= "max-w-6xl mx-auto px-6">
- <div className= "text-center mb-16 space-y-4">
+ <div className= "reveal text-center mb-16 space-y-4">
  <p className= "text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: "Inter, sans-serif", color: "#F5C542" }}>Features</p>
  <h2 className= "text-4xl lg:text-5xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>
  Everything You Need to Practice
@@ -551,10 +553,11 @@ function Features() {
  </div>
 
  <div className= "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
- {features.map((f) => (
+ {features.map((f, i) => (
  <div
  key={f.title}
- className={`p-7 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl group cursor-default ${f.big ?"md:col-span-2" : ""}`}
+ className={`reveal p-7 rounded-3xl transition-all hover:-translate-y-1 hover:shadow-xl group cursor-default ${f.big ?"md:col-span-2" : ""}`}
+ style={{ transitionDelay: `${i * 80}ms` } as React.CSSProperties}
  style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
  >
  <div className= "w-10 h-10 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110" style={{ background: f.color, color: f.color === "#2D2D2D" ?"#F5C542" : "#2D2D2D" }}>
@@ -583,7 +586,7 @@ function DemoSection() {
  <div className= "max-w-6xl mx-auto px-6">
  <div className= "grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
  {/* Left — simulation preview */}
- <div className= "space-y-5">
+ <div className= "reveal space-y-5">
  <p className= "text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: "Inter, sans-serif", color: "#F5C542" }}>Live Demo</p>
  <h2 className= "text-4xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>
  See the Simulation in Action
@@ -629,7 +632,7 @@ function DemoSection() {
  </div>
 
  {/* Right — score cards */}
- <div className= "space-y-6">
+ <div className= "reveal space-y-6" style={{ transitionDelay: '150ms' } as React.CSSProperties}>
  <div className= "p-8 rounded-3xl" style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
  <div className= "flex items-center justify-between mb-6">
  <h3 className= "font-bold text-lg" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>Session Score</h3>
@@ -721,7 +724,7 @@ function Impact() {
  return (
  <section className= "py-28" style={{ background: "#FFF9F1" }}>
  <div className= "max-w-6xl mx-auto px-6">
- <div className= "text-center mb-16 space-y-4">
+ <div className= "reveal text-center mb-16 space-y-4">
  <p className= "text-sm font-semibold uppercase tracking-widest" style={{ fontFamily: "Inter, sans-serif", color: "#F5C542" }}>Why MyClient</p>
  <h2 className= "text-4xl lg:text-5xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>
  Built for Students Who Want to Go Further
@@ -729,10 +732,11 @@ function Impact() {
  </div>
 
  <div className= "grid grid-cols-1 md:grid-cols-2 gap-6">
- {impacts.map((item) => (
+ {impacts.map((item, i) => (
  <div
  key={item.title}
- className= "flex gap-5 p-7 rounded-3xl transition-all hover:shadow-lg hover:-translate-y-0.5"
+ className= "reveal flex gap-5 p-7 rounded-3xl transition-all hover:shadow-lg hover:-translate-y-0.5"
+ style={{ transitionDelay: `${i * 100}ms` } as React.CSSProperties}
  style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}
  >
  <div className= "text-3xl flex-shrink-0">{item.emoji}</div>
@@ -754,7 +758,7 @@ function CTA() {
  <section className= "py-28" style={{ background: "#F8F2E7" }}>
  <div className= "max-w-6xl mx-auto px-6">
  <div
- className= "relative text-center px-8 py-20 rounded-[32px] overflow-hidden"
+ className= "reveal relative text-center px-8 py-20 rounded-[32px] overflow-hidden"
  style={{
  background: "linear-gradient(135deg, #F5C542 0%, #F8D96B 50%, #F5C542 100%)",
  boxShadow: "0 24px 64px rgba(245,197,66,0.35)",
@@ -798,7 +802,7 @@ function Footer() {
  return (
  <footer className= "py-16" style={{ background: "#2D2D2D" }}>
  <div className= "max-w-6xl mx-auto px-6">
- <div className= "grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+ <div className= "reveal grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
  {/* Brand */}
  <div className= "md:col-span-2 space-y-4">
  <div className= "flex items-center gap-2">
@@ -868,8 +872,17 @@ function Footer() {
  );
 }
 
-// Root 
+// Root
 export default function App() {
+ useEffect(() => {
+  const obs = new IntersectionObserver(
+   entries => entries.forEach(e => e.target.classList.toggle('in', e.isIntersecting)),
+   { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  )
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+  return () => obs.disconnect()
+ }, [])
+
  return (
  <div className= "min-h-screen" style={{ fontFamily: "Inter, sans-serif" }}>
  <Nav />
