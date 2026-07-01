@@ -847,9 +847,9 @@ export default function SimulationPage() {
     }
   }
 
-  async function generateWebsite() {
+  async function generateWebsite(promptOverride?: string) {
     setBuilding(true);
-    const buildPromptText = uiPrompt || `Build a professional website for ${persona.name}'s ${persona.business}.`;
+    const buildPromptText = (promptOverride ?? uiPrompt) || `Build a professional website for ${persona.name}'s ${persona.business}.`;
     const userMessage = `You are an expert web developer. Generate a complete, beautiful, single-file HTML website based on this design brief.\n\nRequirements:\n- Use inline CSS only (no external stylesheets except Google Fonts via @import)\n- Include all pages as sections with smooth scroll navigation\n- Make it mobile responsive\n- Use the brand colors and style described\n- Include realistic placeholder content from the proposal\n- Make it look like a real, polished, production-ready website\n- No placeholder images — use CSS gradients or emoji as visual accents instead\n\nDesign Brief:\n${buildPromptText}\n\nClient: ${persona.name} — ${persona.business}\n\nReturn ONLY the complete HTML code starting with <!DOCTYPE html>, nothing else.`;
     try {
       // Try Claude via Vercel proxy first
@@ -1684,7 +1684,7 @@ export default function SimulationPage() {
           />
         </div>
         <button
-          onClick={() => { setGeneratedHtml(""); setBuildLink(""); generateWebsite(); }}
+          onClick={() => { const p = uiPrompt; setGeneratedHtml(""); setBuildLink(""); generateWebsite(p); }}
           disabled={building || !uiPrompt.trim()}
           className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
           style={{ background: "#8B5CF6", color: "#fff" }}
