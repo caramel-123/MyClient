@@ -187,145 +187,529 @@ export async function sendToGemini(
  return text;
 }
 
-// Per-persona discovery responses
+// Per-persona discovery responses — each field can be a string or array of variants (picked randomly)
+type DR = string | string[];
 type DiscoveryResponses = {
- overview: string;
- problem: string;
- tagline: string;
- contactInfo: string;
- goal: string;
- cta: string;
- features: string;
- pages: string;
- existingContent: string;
- logo: string;
- design: string;
- reference: string;
- featuresDetail: string;
- domain: string;
- seo: string;
- audience: string;
- deadline: string;
- budget: string;
- revision: string;
- mobile: string;
- social: string;
- assets: string;
- start: string;
- fallback1: string;
- fallback2: string;
+ overview: DR; problem: DR; tagline: DR; contactInfo: DR; goal: DR; cta: DR;
+ features: DR; pages: DR; existingContent: DR; logo: DR; design: DR; reference: DR;
+ featuresDetail: DR; domain: DR; seo: DR; audience: DR; deadline: DR; budget: DR;
+ revision: DR; mobile: DR; social: DR; assets: DR; start: DR; fallback1: DR; fallback2: DR;
 };
+function dr(v: DR): string { return Array.isArray(v) ? pick(v) : v; }
 
 const PERSONA_DISCOVERY: Record<string, DiscoveryResponses> = {
   "Maria Santos": {
-    overview:        "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na karinderya dito sa aming barangay — 'Santos Karinderya' ang pangalan namin. Mga 5 taon na kaming nagtitinda ng lutong pagkain — adobo, sinigang, kare-kare, lahat ng Pinoy favorites. Lagi kaming puno ng customers tuwing tanghali, pero ang problema, lagi silang nagta-DM sa aming Facebook para magtanong ng menu at presyo kahit bukas na kami. Dati okay pa, pero ngayon sobra na yung messages — nakaka-miss na kami ng orders. Gusto ko sana may website na maipapakita sa kanila para hindi na kailangang mag-DM pa. Budget ko ₱5,000 lang pero sana kaya pa rin natin gawing maayos.",
-    problem:         "Yung problema ko, lagi nagta-DM sa Messenger yung customers para magtanong kung anong ulam available ngayon. Super dami ng messages, di ko na nasasagot lahat. Gusto ko na lang may makita silang menu sa website.",
-    tagline:         "Ang slogan namin ay 'Lutong-Luto, Puso ang Puhunan!' Yung address namin — Blk 4 Lot 12, Sampaguita St., Barangay San Jose, Quezon City. Malapit lang sa palengke.",
-    contactInfo:     "Yung contact number namin 0917-555-2341, tapos may email din kami — santoskarinderya@gmail.com. Yung Facebook page namin 'Santos Karinderya' — yan lang meron kami ngayon.",
-    goal:            "Ang gusto ko, makita lang ng mga customers yung menu namin online para hindi na kailangang mag-DM. Tapos sana may contact info din para makuha nila yung number namin kung gusto nilang magtanong.",
-    cta:             "Gusto ko na kapag nakita nila yung website, tawagan na nila kami o pumunta na sa tindahan. Simple lang — yung 'Call Us' button sana visible agad.",
-    features:        "Display lang muna ng menu! Hindi pa ready para sa online ordering — baka next year na lang yun kapag may delivery boy na kami.",
-    pages:           "Hmm... Home, Menu, About us, tsaka Contact siguro? Di ko pa iniisip yun eh, ikaw na bahala sa layout!",
-    existingContent: "Wala pa akong photos na maganda ng pagkain, kailangan pang mag-shoot. Yung menu — may listahan kami sa notebook pero hindi pa typed. Ikaw na bahala sa content kung kaya mo.",
-    logo:            "May logo kami pero nasa papel lang — hindi pa naka-digitize. Pwede bang gawin mo or improve? Yung design namin parang nakasulat lang na 'SK' sa bilog.",
-    design:          "Gusto ko warm colors — orange or yellow para appetizing ang dating. Yung font sana malinaw at malaki para matanda ring makabasa.",
-    reference:       "Ay, nakita ko yung website ng Max's Restaurant — gusto ko yung dating nila. Clean pero appetizing. Hindi masyadong complicated.",
-    featuresDetail:  "Sana may Google Maps para malaman nila kung nasaan kami. At yung Facebook page namin, may link doon sa website. Contact form din sana para makapag-message ang customers.",
-    domain:          "Wala pa kaming domain name. Ikaw na bahala kung ano ang maganda — baka 'santoskarinderya.com' o ganun? Hosting din wala kami, ikaw na mag-arrange.",
-    seo:             "Gusto ko makita kami sa Google pag nag-search ng 'karinderya sa Quezon City'! Yung privacy policy — hindi ko pa alam kung kailangan, ikaw na mag-decide.",
-    audience:        "Mga taga-kapitbahay mostly, laging nag-oorder ng tanghalian at merienda. Mostly sa phone sila, hindi laptop.",
-    deadline:        "Sana within 2 weeks? May pagdating kasi ng sponsor namin sa bahay next month, gusto ko presentable na.",
-    budget:          "₱5,000 lang budget ko. Kasama na ba doon yung revisions kung may gusto akong baguhin?",
-    revision:        "Sana may dalawang beses na revision included! Baka may gusto akong palitan pagkakita ng output.",
-    mobile:          "Oo mobile-friendly dapat! Wala namang laptop yung mga tao rito, cellphone lang talaga.",
-    social:          "Meron kaming Facebook page, 'Santos Karinderya' yung name. Sana may link doon sa website!",
-    assets:          "Magsesend ako ng mga litrato ng pagkain — baka bukas pa lang kasi kailangan ko pang mag-shoot. Yung menu list i-type ko na rin. Logo file wala pa akong digital copy, ikaw na bahala.",
-    start:           "Sige! Go na tayo. I-send mo na yung proposal mo ha? Kasama yung timeline at breakdown ng bayad.",
-    fallback1:       "Oo ganun. Karinderya lang kami pero maraming customers. Lagi silang nagtatanong kaya gusto ko na may website na kami.",
-    fallback2:       "Wala pa akong specific idea doon. Ikaw na bahala, ikaw ang expert! Basta mukhang masaya at food-related.",
+    overview: [
+      "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na karinderya dito sa aming barangay — 'Santos Karinderya' ang pangalan namin. Mga 5 taon na kaming nagtitinda ng lutong pagkain — adobo, sinigang, kare-kare, lahat ng Pinoy favorites. Lagi kaming puno ng customers tuwing tanghali, pero ang problema, lagi silang nagta-DM sa aming Facebook para magtanong ng menu at presyo kahit bukas na kami.",
+      "Ay sige! So kami ay may maliit na karinderya — 'Santos Karinderya' — dito sa aming lugar. Mga 5 taon na kami. Ang problema namin, lagi kaming may missed orders kasi nagta-DM yung customers namin sa Facebook imbes na pumunta na lang sa tindahan. Budget ko ₱5,000 lang.",
+      "Okay po! So may karinderya kami — 5 taon na. 'Santos Karinderya' yung name. Adobo, sinigang, lahat ng Pinoy food. Yung mga customers namin, nagtatanong pa rin ng menu sa Facebook Messenger kahit bukas na kami. Dami na ng messages, nakaka-miss na kami ng orders.",
+    ],
+    problem: [
+      "Yung problema ko, lagi nagta-DM sa Messenger yung customers para magtanong kung anong ulam available ngayon. Super dami ng messages, di ko na nasasagot lahat. Gusto ko na lang may makita silang menu sa website.",
+      "Ay yung tanong ko ay — ang mga customers namin, hindi sila makapag-DM ng tama. Pag tanghali sobrang busy namin, di na namin nasasagot. Nakaka-miss kami ng orders kaya gusto ko may malinaw na listahan sa website.",
+      "Yung grabe, palagi silang nagtatanong ng menu sa Messenger — kahit may opening hours na kami, dinadaan pa rin sa DM. Basta gusto ko yung info makita na agad sa website para hindi na kailangang mag-message.",
+    ],
+    tagline: [
+      "Ang slogan namin ay 'Lutong-Luto, Puso ang Puhunan!' Yung address namin — Blk 4 Lot 12, Sampaguita St., Barangay San Jose, Quezon City. Malapit lang sa palengke.",
+      "'Lutong-Luto, Puso ang Puhunan!' yung slogan namin! Cute di ba? Tapos nasa Blk 4 Lot 12, Sampaguita St., Barangay San Jose, QC kami. Malapit sa palengke!",
+      "Ay meron kaming slogan — 'Lutong-Luto, Puso ang Puhunan!' Address namin Blk 4 Lot 12, Sampaguita St., Quezon City.",
+    ],
+    contactInfo: [
+      "Yung contact number namin 0917-555-2341, tapos may email din kami — santoskarinderya@gmail.com. Yung Facebook page namin 'Santos Karinderya' — yan lang meron kami ngayon.",
+      "Numero namin 0917-555-2341. May email din — santoskarinderya@gmail.com. Facebook 'Santos Karinderya' — yun lang gumagana ngayon.",
+      "0917-555-2341 yung cellphone namin. Tapos santoskarinderya@gmail.com ang email. Hindi naman kailangan pa ng iba siguro?",
+    ],
+    goal: [
+      "Ang gusto ko, makita lang ng mga customers yung menu namin online para hindi na kailangang mag-DM. Tapos sana may contact info din para makuha nila yung number namin.",
+      "Simple lang yung goal ko — gusto ko may makita silang menu sa website. Hindi na kailangan pang mag-DM. Tapos yung contact number namin makikita rin doon.",
+      "Yung website para ma-display yung menu at presyo. Para yung customers hindi na magtanong pa — makikita na agad lahat.",
+    ],
+    cta: [
+      "Gusto ko na kapag nakita nila yung website, tawagan na nila kami o pumunta na sa tindahan. Simple lang — yung 'Call Us' button sana visible agad.",
+      "Kapag nagbukas sila ng website, gusto kong pindutin nila yung 'Call Us' agad! O kaya pumunta na lang talaga sa tindahan. Yun ang gusto ko.",
+      "Tawag lang o personal na pumunta — yun ang action. 'Call Now' button sana malaki at visible para hindi sila mapagod mag-navigate.",
+    ],
+    features: [
+      "Display lang muna ng menu! Hindi pa ready para sa online ordering — baka next year na lang yun kapag may delivery boy na kami.",
+      "Menu display lang muna — hindi pa kaya ng online ordering. Masyadong complicated yun ngayon. Baka next year.",
+      "Para sa ngayon, yung menu at presyo makita lang nila. Wag muna online order — hindi kami ready pa.",
+    ],
+    pages: [
+      "Hmm... Home, Menu, About us, tsaka Contact siguro? Di ko pa iniisip yun eh, ikaw na bahala sa layout!",
+      "Home siguro, tapos Menu page, Contact info, baka About us? Ikaw na bahala sa kung ano pa ang kailangan.",
+      "Yung Menu page sure! Home saka Contact — yun lang siguro? Hindi ko alam kung may iba pa kailangan.",
+    ],
+    existingContent: [
+      "Wala pa akong photos na maganda ng pagkain, kailangan pang mag-shoot. Yung menu — may listahan kami sa notebook pero hindi pa typed. Ikaw na bahala sa content kung kaya mo.",
+      "Yung photos wala pa akong maganda — mga selfie lang ng pagkain haha. Kailangan pang i-arrange. Yung menu nasa notebook ko — may listahan pero di pa na-type.",
+      "Wala pa kaming maayos na content. Photos kailangan pang gawin. Yung menu ise-send ko sa message pero hindi pa naka-type.",
+    ],
+    logo: [
+      "May logo kami pero nasa papel lang — hindi pa naka-digitize. Pwede bang gawin mo or improve? Yung design namin parang nakasulat lang na 'SK' sa bilog.",
+      "Logo meron pero isa lang — nasa sulat sa papel, hindi pa digital. Baka pwede mong gawing proper? 'SK' yung initials.",
+      "May logo kami pero sa notebook pa lang siya. Nakasulat — 'SK' sa bilog. Hindi pa digital. Sana maiscan mo or gumawa ng bago.",
+    ],
+    design: [
+      "Gusto ko warm colors — orange or yellow para appetizing ang dating. Yung font sana malinaw at malaki para matanda ring makabasa.",
+      "Sana warm colors — orange, yellow, parang masaya at appetizing. Yung text malinaw at malaking font para madaling basahin.",
+      "Para sa design, warm at masaya — orange or yellow tones. Parang pagkain ang dating. Matanda rin kasi ang customers namin, kaya malaking text.",
+    ],
+    reference: [
+      "Ay, nakita ko yung website ng Max's Restaurant — gusto ko yung dating nila. Clean pero appetizing. Hindi masyadong complicated.",
+      "Yung Max's Restaurant website — yun ang gusto ko. Clean, may food photos, simple lang. Hindi magulo.",
+      "Nakita ko yung Jollibee website dati — yung maayos at may malinaw na menu. Ganun ang gusto ko. Hindi masyadong maraming design.",
+    ],
+    featuresDetail: [
+      "Sana may Google Maps para malaman nila kung nasaan kami. At yung Facebook page namin, may link doon sa website. Contact form din sana para makapag-message ang customers.",
+      "Google Maps gusto ko! Para alam nila kung saan kami. Pati Facebook link — visible dapat. Baka may contact form din para makapag-message sila kahit walang phone.",
+      "May link dapat sa Facebook page namin. Tapos Google Maps para sa address. Contact form optional pero sana kasama.",
+    ],
+    domain: [
+      "Wala pa kaming domain name. Ikaw na bahala kung ano ang maganda — baka 'santoskarinderya.com' o ganun? Hosting din wala kami, ikaw na mag-arrange.",
+      "Wala pa domain. Baka 'santoskarinderya.com'? Ikaw na bahala sa pagkuha. Hindi ko alam kung magkano yun.",
+      "Domain wala pa kami. Okay lang kung ikaw na bahala — basta affordable. Hosting din wala.",
+    ],
+    seo: [
+      "Gusto ko makita kami sa Google pag nag-search ng 'karinderya sa Quezon City'! Yung privacy policy — hindi ko pa alam kung kailangan, ikaw na mag-decide.",
+      "Gusto ko yung kapag nag-search ng 'karinderya QC' makita kami. Google kasi yung ginagamit ng mga customers. Privacy policy — wala pa akong alam doon.",
+      "Sa Google gusto ko makita — 'lutong ulam Quezon City' o ganun. Basta makita kami sa search. Yung iba hindi ko masyadong alam.",
+    ],
+    audience: [
+      "Mga taga-kapitbahay mostly, laging nag-oorder ng tanghalian at merienda. Mostly sa phone sila, hindi laptop.",
+      "Yung mga customers namin, mga tao sa aming barangay — lola, nanay, kuya na nag-oorder ng tanghalian. Lahat sa cellphone.",
+      "Kapitbahay namin mostly. Mga 30-60 years old, cellphone lang gamit. Wala namang laptop yung mga tao dito.",
+    ],
+    deadline: [
+      "Sana within 2 weeks? May pagdating kasi ng sponsor namin sa bahay next month, gusto ko presentable na.",
+      "2 weeks sana? May okasyon kami next month at gusto ko ready na yung website noon.",
+      "Hindi ako nagmamadali pero sana within 2 weeks para may time pa mag-revise.",
+    ],
+    budget: [
+      "₱5,000 lang budget ko. Kasama na ba doon yung revisions kung may gusto akong baguhin?",
+      "₱5,000 yung budget ko. Sana kaya pa rin yan. Kasama na ba ang lahat doon?",
+      "Budget namin ₱5,000. Hindi kami makapag-dagdag kaya sana sakto na yun.",
+    ],
+    revision: [
+      "Sana may dalawang beses na revision included! Baka may gusto akong palitan pagkakita ng output.",
+      "Gusto ko 2 rounds sana ng revision. Malamang may gusto akong palitan pagkita ko ng output.",
+      "Pwede bang may revision? Baka may gusto akong baguhin pag nakita ko na. Dalawang beses sana.",
+    ],
+    mobile: [
+      "Oo mobile-friendly dapat! Wala namang laptop yung mga tao rito, cellphone lang talaga.",
+      "Mobile talaga! Lahat ng customers namin nagba-browse sa cellphone. Walang laptop.",
+      "Cellphone-friendly — siguradong yun. Yung mga kapitbahay namin, tablet o laptop wala.",
+    ],
+    social: [
+      "Meron kaming Facebook page, 'Santos Karinderya' yung name. Sana may link doon sa website!",
+      "'Santos Karinderya' yung Facebook namin. Sana may link sa website para mapuntahan nila doon.",
+      "Facebook lang meron kami — 'Santos Karinderya'. Sana ilagay mo yung link.",
+    ],
+    assets: [
+      "Magsesend ako ng mga litrato ng pagkain — baka bukas pa lang kasi kailangan ko pang mag-shoot. Yung menu list i-type ko na rin. Logo file wala pa akong digital copy, ikaw na bahala.",
+      "Photos magsesend ako next week — kailangan pang mag-shoot ng maayos. Menu list i-type ko. Logo wala pang digital — ikaw na bahala.",
+      "Yung files — photos ko next week pa. Menu nasa notebook ko, i-send ko sa text. Logo hindi pa digital.",
+    ],
+    start: [
+      "Sige! Go na tayo. I-send mo na yung proposal mo ha? Kasama yung timeline at breakdown ng bayad.",
+      "Sige, go na! Paki-send na ng proposal at kasama yung magkano at kailan tapos.",
+      "Okay sige, proceed na! I-send mo yung proposal at yung schedule ng trabaho.",
+    ],
+    fallback1: [
+      "Oo ganun. Karinderya lang kami pero maraming customers. Lagi silang nagtatanong kaya gusto ko na may website na kami.",
+      "Oo, simple lang ang gusto namin — basta may makita silang menu online.",
+      "Karinderya lang talaga kami. Pero gusto ko professional ang dating ng website.",
+    ],
+    fallback2: [
+      "Wala pa akong specific idea doon. Ikaw na bahala, ikaw ang expert! Basta mukhang masaya at food-related.",
+      "Hmm hindi ko pa alam yun eh. Kung ano ang maganda sayo, okay na rin sa akin.",
+      "Di ko pa napag-isipan yun. Basta maganda at food-vibe yung dating.",
+    ],
   },
   "Kuya Jun": {
-    overview:        "Uy sige sasabihin ko! Nagbebenta ako online ng iba't ibang produkto — pangunahin yung cellphone accessories tapos may snacks din, basic goods, yung mga kailangan sa bahay. Ginagawa ko ito through Facebook at TikTok mostly, at may Shopee shop din ako. Problema ko, lahat ng orders naka-chats lang sa Messenger at DM — walang maayos na listahan ng products kaya minsan nakaka-miss ako ng orders. Yung mga buyers ko, mga kabataan mostly, lahat sa phone. Gusto ko may sariling website na parang catalog para ma-browse nila lahat without mag-message muna. Budget ko ₱8,000 at gusto ko ASAP — within one week kung kaya.",
-    problem:         "Nagtitinda ako online — cellphone accessories, snacks, basic goods. Problema ko, lagi nakaka-miss ng orders kasi naka-chats lang lahat. Gusto ko may sarili na listing ng products.",
-    tagline:         "Wala akong tagline. 'Jun Online Shop' lang yung name ko. Address ko nasa Caloocan — 123 Rizal Ave, Caloocan City. Hindi naman kailangan ng address sa site, online lang naman ako.",
-    contactInfo:     "0912-888-4567 yung number ko. Wala akong email — Facebook Messenger lang. Ikaw na bahala kung kailangan pa ng email para sa website.",
-    goal:            "Gusto ko may catalog lang na makita ng buyers ko — yung lahat ng products ko naka-display ng maayos. Para hindi na sila kailangang mag-DM para magtanong ng available ba.",
-    cta:             "Kapag nakita nila yung product, mag-message sila sa akin sa Messenger or TikTok. Yung 'Order Now' button sana linked doon. Simple lang.",
-    features:        "Gusto ko may catalog ng products at may GCash payment option. Pero wag muna yung complicated na shopping cart — simple lang muna.",
-    pages:           "Products page lang talaga yung priority. Baka Home din. Wag nang marami, magastos.",
-    existingContent: "May product photos na ako — mga nagawa ko na sa Shopee listing. Pwede ko i-send. Yung descriptions, ilagay mo na lang base sa products.",
-    logo:            "Wala akong logo. Yung Shopee ko, text lang yung store name. Gawa ka na lang ng simple — 'JOS' o yung buong name. Basta hindi mahal.",
-    design:          "Wala akong pakialam sa design basta maayos at mabilis. Yung asul or pula — color ng tindahan ko. Simple lang.",
-    reference:       "Shopee lang ang alam ko. Yung dating ng Shopee — clear yung products, may price visible agad. Ganun lang gusto ko.",
-    featuresDetail:  "GCash payment sana para makapag-order agad. Baka search bar din para madaling hanapin ng buyers yung product. Wag nang iba — baka mahal pa.",
-    domain:          "Wala akong domain. Ikaw na bahala. Yung mura lang — o baka free hosting muna para makita ko kung worth it.",
-    seo:             "Gusto ko makita sa Google. Yung 'cellphone accessories Caloocan' or ganun. Privacy policy — wala akong alam doon, ikaw na bahala kung kailangan.",
-    audience:        "Mga kabataan mostly, 18-30. Lahat naman sa phone nagbibili ngayon. Desktop wala na.",
-    deadline:        "ASAP! Sa loob ng isang linggo dapat. Kailangan ko na kasi marami na nagtatanong.",
-    budget:          "₱8,000 sabi ko, pero kung mahal pa yun sabihin mo agad ha? Hindi ako nagpapaalog ng matagal.",
-    revision:        "Isa lang revision pwede pa. Pero sana tama na sa first try para hindi na abutin pa.",
-    mobile:          "Mobile talaga yung priority. Yung buyers ko walang laptop, sa TikTok sila nagdidiscover ng products.",
-    social:          "May Facebook page ako 'Jun Online Shop'. Pati Shopee link — isama mo na rin kung kaya.",
-    assets:          "Susuguin ko yung product photos sa Messenger. Mga 30 products lang muna. Descriptions ko rin i-send — copy paste ko na lang sa Shopee.",
-    start:           "Sige go. Send mo na yung proposal. Wag nang matagal, kelangan ko na yung website.",
-    fallback1:       "Oo ganun yun. Busy ako kaya sagutin mo na lang lahat ng tanong mo ngayon para hindi na paulit-ulit.",
-    fallback2:       "Di ko alam yun, ikaw na mag-decide. Basta gumana at hindi slow.",
+    overview: [
+      "Uy sige sasabihin ko! Nagbebenta ako online ng iba't ibang produkto — pangunahin yung cellphone accessories tapos may snacks din, basic goods. Ginagawa ko ito through Facebook at TikTok mostly, at may Shopee shop din ako. Problema ko, lahat ng orders naka-chats lang sa Messenger — walang maayos na listahan ng products kaya minsan nakaka-miss ako ng orders. Budget ko ₱8,000 at gusto ko ASAP — within one week kung kaya.",
+      "Okay sasabihin ko — nagbebenta ako ng cellphone accessories, snacks, basic goods sa Facebook at TikTok. May Shopee din ako. Lahat ng orders nasa Messenger — chaotic. Gusto ko may website na catalog para ma-browse ng buyers nang maayos. ₱8,000 budget, asap yung gusto ko.",
+      "Nagbebenta ako online — accessories, snacks, household items. Lahat sa Messenger dumadating yung orders, super messy. Gusto ko may sariling catalog website para maayos yung listings. Budget ₱8,000.",
+    ],
+    problem: [
+      "Nagtitinda ako online — cellphone accessories, snacks, basic goods. Problema ko, lagi nakaka-miss ng orders kasi naka-chats lang lahat. Gusto ko may sarili na listing ng products.",
+      "Yung problema eh — pag maraming orders, lahat naka-Messenger at DM. Nagkakagulo yung traker. May missed orders na ako. Kaya gusto ko proper catalog.",
+      "Orders nangagamot sa Messenger — hindi ko ma-track lahat. Lagi may nakaka-miss. Gusto ko may website na lahat visible agad.",
+    ],
+    tagline: [
+      "Wala akong tagline. 'Jun Online Shop' lang yung name ko. Address ko nasa Caloocan — 123 Rizal Ave, Caloocan City. Hindi naman kailangan ng address sa site, online lang naman ako.",
+      "Wala akong slogan. 'Jun Online Shop' lang. Nasa Caloocan ako pero online lang naman ang business, hindi kailangan ng address sa website.",
+      "'JOS' or 'Jun Online Shop' lang ang brand ko. Wala pang tagline. Caloocan address ko pero hindi naman kailangan ilagay.",
+    ],
+    contactInfo: [
+      "0912-888-4567 yung number ko. Wala akong email — Facebook Messenger lang. Ikaw na bahala kung kailangan pa ng email para sa website.",
+      "Number ko 0912-888-4567. Email wala pa — Messenger lang gamit ko. Kung kailangan ng email para sa site pwede kang gumawa ng simple.",
+      "0912-888-4567. Wala akong email, pero okay lang mag-create ako ng one kung kailangan. Messenger lang usually gamit ko.",
+    ],
+    goal: [
+      "Gusto ko may catalog lang na makita ng buyers ko — yung lahat ng products ko naka-display ng maayos. Para hindi na sila kailangang mag-DM para magtanong ng available ba.",
+      "Simple lang — gusto ko may page na pwedeng puntahan ng buyers para makita lahat ng products. Price included agad. Hindi na kailangan pang magtanong.",
+      "Yung buyers ko, gusto ko may mapuntahan silang website na makikita yung lahat ng items at price. Direct to order na lang.",
+    ],
+    cta: [
+      "Kapag nakita nila yung product, mag-message sila sa akin sa Messenger or TikTok. Yung 'Order Now' button sana linked doon. Simple lang.",
+      "'Order Now' button na mag-o-open ng Messenger — yun gusto ko. Para agad makita ng buyers kung paano mag-order.",
+      "Kapag gusto nilang bumili, i-message ako sa Messenger. So yung CTA — 'Message to Order' lang sana.",
+    ],
+    features: [
+      "Gusto ko may catalog ng products at may GCash payment option. Pero wag muna yung complicated na shopping cart — simple lang muna.",
+      "Product catalog lang muna — lahat ng items may photo at price. GCash sana kasama pero wag muna shopping cart.",
+      "Catalog, GCash info, at maybe search bar. Wag masyadong complicated — simple at fast.",
+    ],
+    pages: [
+      "Products page lang talaga yung priority. Baka Home din. Wag nang marami, magastos.",
+      "Home at Products lang siguro. Wag nang marami — yung essentials lang.",
+      "Products page talaga yung kailangan. Home page intro lang, wag masyadong maraming section.",
+    ],
+    existingContent: [
+      "May product photos na ako — mga nagawa ko na sa Shopee listing. Pwede ko i-send. Yung descriptions, ilagay mo na lang base sa products.",
+      "Shopee listing ko puwedeng gamitin — may photos na doon. Descriptions, ikaw na gumawa base sa type ng product.",
+      "May photos na ako galing sa Shopee. I-send ko sa Messenger. Descriptions pwede mo i-base sa Shopee listing ko.",
+    ],
+    logo: [
+      "Wala akong logo. Yung Shopee ko, text lang yung store name. Gawa ka na lang ng simple — 'JOS' o yung buong name. Basta hindi mahal.",
+      "Logo wala. Yung simple lang — 'JOS' initials or text lang. Basta hindi masyadong maraming design.",
+      "Wala akong logo pero hindi rin ako picky. Basta may brand name visible — 'Jun Online Shop' text lang pwede na.",
+    ],
+    design: [
+      "Wala akong pakialam sa design basta maayos at mabilis. Yung asul or pula — color ng tindahan ko. Simple lang.",
+      "Basta maayos, hindi slow, at malinaw yung products. Color — asul or pula. Hindi na kailangan ng fancy design.",
+      "Simple lang yung gusto ko — maayos, malinaw, at hindi sabog. Asul or pula siguro ang color. Load agad.",
+    ],
+    reference: [
+      "Shopee lang ang alam ko. Yung dating ng Shopee — clear yung products, may price visible agad. Ganun lang gusto ko.",
+      "Shopee yung alam ko. Yung malinaw ang products at visible agad ang price — yun ang gusto ko. Simple.",
+      "Gusto ko yung Shopee-style — lahat visible, may price agad, walang kalituhan sa navigation.",
+    ],
+    featuresDetail: [
+      "GCash payment sana para makapag-order agad. Baka search bar din para madaling hanapin ng buyers yung product. Wag nang iba — baka mahal pa.",
+      "GCash info dapat visible. Search bar din sana — 30 products na kasi ako, kailangan ng filter. Yun lang.",
+      "GCash at search bar — yun ang need ko. Wag nang iba. Mahal pa yun.",
+    ],
+    domain: [
+      "Wala akong domain. Ikaw na bahala. Yung mura lang — o baka free hosting muna para makita ko kung worth it.",
+      "Wala domain. Mura lang — o libre muna para matry ko. Kung worth it, mag-upgrade tayo.",
+      "Domain wala pa. Kung meron kang libre o mura, yun na. Hindi pa ako sure kung mag-iinvest sa hosting.",
+    ],
+    seo: [
+      "Gusto ko makita sa Google. Yung 'cellphone accessories Caloocan' or ganun. Privacy policy — wala akong alam doon, ikaw na bahala kung kailangan.",
+      "'Cellphone accessories Caloocan' o 'online shop Caloocan' — gusto ko makita sa Google. SEO basics lang.",
+      "Sa Google gusto ko lumabas. 'Accessories online Philippines' o ganun. Privacy policy — wala akong alam, sige bahala ka.",
+    ],
+    audience: [
+      "Mga kabataan mostly, 18-30. Lahat naman sa phone nagbibili ngayon. Desktop wala na.",
+      "Mga bata, 18-30. TikTok at Facebook sila — cellphone lahat. Desktop bihira.",
+      "Kabataan — mga 18 hanggang 30. Lahat mobile. TikTok naman ang main discovery channel nila.",
+    ],
+    deadline: [
+      "ASAP! Sa loob ng isang linggo dapat. Kailangan ko na kasi marami na nagtatanong.",
+      "1 week lang dapat — maraming buyers nagtatanong na. Kailangan ko na agad yung catalog.",
+      "Isang linggo. Dali dali na. Marami na nagtatanong ngayon.",
+    ],
+    budget: [
+      "₱8,000 sabi ko, pero kung mahal pa yun sabihin mo agad ha? Hindi ako nagpapaalog ng matagal.",
+      "₱8,000 — yun lang. Wag nang dagdag dagdag. Kung lampas na, sabihin mo agad.",
+      "Budget ₱8,000. Firm yun. Kung may dagdag bayad, i-discuss agad.",
+    ],
+    revision: [
+      "Isa lang revision pwede pa. Pero sana tama na sa first try para hindi na abutin pa.",
+      "1 revision saka okay na. Pero sana tama agad para hindi na kailangang ulitin.",
+      "Isa lang revision — hindi ako palarevise basta tama yung output.",
+    ],
+    mobile: [
+      "Mobile talaga yung priority. Yung buyers ko walang laptop, sa TikTok sila nagdidiscover ng products.",
+      "Mobile-first talaga — buyers ko lahat sa phone. TikTok sila mostly.",
+      "Phone lang gamit ng buyers ko. Desktop hindi na uso sa kanila.",
+    ],
+    social: [
+      "May Facebook page ako 'Jun Online Shop'. Pati Shopee link — isama mo na rin kung kaya.",
+      "'Jun Online Shop' Facebook page ko. Shopee link din sana — i-link sa website.",
+      "Facebook at Shopee links — sana visible sa website. Para direct na sila makapunta.",
+    ],
+    assets: [
+      "Susuguin ko yung product photos sa Messenger. Mga 30 products lang muna. Descriptions ko rin i-send — copy paste ko na lang sa Shopee.",
+      "Photos — susend ko via Messenger. 30 items lang muna. Descriptions kukunin ko sa Shopee.",
+      "Mga product photos i-send ko. Shopee descriptions ko i-copy paste. 30 items para magsimula.",
+    ],
+    start: [
+      "Sige go. Send mo na yung proposal. Wag nang matagal, kelangan ko na yung website.",
+      "Go na! Proposal agad. Wag mahirap.",
+      "Okay sige. Paki-send na proposal ngayon. Gusto ko magsimula agad.",
+    ],
+    fallback1: [
+      "Oo ganun yun. Busy ako kaya sagutin mo na lang lahat ng tanong mo ngayon para hindi na paulit-ulit.",
+      "Oo. Tanungin mo na lahat ngayon para mabilis tayo. Busy ako.",
+      "Ganun yun. Marami pa bang tanong? Sagutin natin ngayon para matapus na.",
+    ],
+    fallback2: [
+      "Di ko alam yun, ikaw na mag-decide. Basta gumana at hindi slow.",
+      "Wala akong pakialam doon — ikaw na bahala. Basta maayos.",
+      "Alam mo yun mas mabuti sa akin — desisyon mo na yun.",
+    ],
   },
   "Ate Bea": {
-    overview:        "Omg okay so let me explain! So nagbe-benta ako ng pre-loved clothes sa Instagram — yung handle ko is @bea.thrift. Mostly mga branded items, thrifted pieces, curated outfits. Mga 2 years na ako nagbe-benta online at okay naman ang benta pero ang dumi-dumi na ng Instagram feed ko — parang hindi professional. Gusto ko may legit na website na parang boutique yung dating, yung mga buyers ko makikita nila lahat ng items sa isang maayos na place. Yung aesthetic ko is minimalist — beige, dusty rose, or sage green. Target ko mga Gen Z girls, 16-30, lahat sa phone at Instagram. Budget ko ₱6,500 and sana gawin nating super maganda!",
-    problem:         "So yung issue ko, nagbebenta ako ng pre-loved fashion sa Instagram pero ang dumi-dumi ng feed ko ngayon. Gusto ko may proper portfolio website na aesthetic — parang yung mga legit boutiques sa abroad!",
-    tagline:         "Omg wait I have one! 'Wear the Story.' Super cute di ba? Wala akong physical store — online lang ako. Pero nasa Marikina ako kung curious ka.",
-    contactInfo:     "Yung email ko bea.thrift@gmail.com. Instagram @bea.thrift. Wala akong landline — DM or email lang. Sana ilagay mo both sa website.",
-    goal:            "Gusto ko may proper online presence — yung buyers ko may mapuntahan na website na hindi lang Instagram. Para mas legit ang dating ng brand ko at mas madaling mag-browse ng items.",
-    cta:             "Kapag gusto nilang bumili, i-DM nila ako sa Instagram! Yung 'Shop Now' or 'DM to Order' button — linked sa @bea.thrift. Gusto ko visible yung Instagram everywhere sa site.",
-    features:        "Gusto ko may lookbook section! Yung mga outfits ko styled nicely. Baka may shop section din — pero focus muna sa aesthetic, yung vibe!",
-    pages:           "Hmm... Home, Lookbook, Shop, About me, Contact! Oh at baka Collections page din? Depende sa budget natin.",
-    existingContent: "Marami akong photos! Yung mga Instagram posts ko puwedeng gamitin — may 200+ items na ako. Yung About me section, ikaw na bahala sa pagkukuwento — basta cute ang dating.",
-    logo:            "Wala pa akong proper logo! Gusto ko may cute logo — yung parang hanger or butterfly or something girly pero minimalist. Sana kasama sa scope na gumawa ka ng logo?",
-    design:          "Omg so gusto ko yung minimalist aesthetic pero may pop ng color — beige base, dusty rose accents? Or baka sage green? Nagbabago-bago pa ako honestly.",
-    reference:       "Nakita ko yung Depop website and ZARA online — gusto ko yung clean grid layout ng ZARA pero yung cozy vibe ng Depop. Mix of both sana!",
-    featuresDetail:  "Gusto ko may Instagram feed embed sa homepage — yung live feed ko. Newsletter din sana para ma-notify sila ng bagong items! At contact form para sa custom orders.",
-    domain:          "Wala pa akong domain. Gusto ko 'beathrift.com' or 'bea-thrift.shop' — yung may .shop parang cute! Ikaw na mag-register?",
-    seo:             "Gusto ko ma-Google! Yung 'pre-loved clothes Philippines' or 'thrift shop Marikina'. At saka — kailangan ba ng privacy policy? May personal info kasi ako ng buyers.",
-    audience:        "Mga Gen Z and millennials mostly! Girls aged 16-30. 100% mobile sila, lahat sa Instagram nag-shop.",
-    deadline:        "Baka mga 3 weeks? Hindi ako nagmamadali basta maganda ang output. Quality over speed!",
-    budget:          "₱6,500 yung set ko. Pero if maganda talaga ang gawa mo baka may dagdag pa ako. Depende!",
-    revision:        "Hm gusto ko actually maraming revisions kasi maarte ako eh. Pwede bang 3 rounds?",
-    mobile:          "Mobile talaga! Lahat ng customers ko nag-browse sa phone. Dapat Instagram-worthy yung design.",
-    social:          "My Instagram is @bea.thrift! Gusto ko yung website linked doon — lahat ng links sana visible.",
-    assets:          "Susend ko yung product photos via Google Drive — marami akong pang-lookbook shots. Logo wala pa, kasama ba yun sa project? Yung About me content, ikaw na rin gumawa sana.",
-    start:           "Omg exciting! Sige send mo na yung proposal! Pero may gusto pa akong i-add — pwede ba may newsletter section?",
-    fallback1:       "Ay hindi ko pa napag-isipan yan ng maayos eh. Pwede bang magpadala ka ng options? Gusto ko makita lahat bago ako mag-decide.",
-    fallback2:       "Actually nagbago na isip ko konti — baka mas gusto ko yung... hmm let me think ulit. Hihintayin mo lang ako ha?",
+    overview: [
+      "Omg okay so let me explain! So nagbe-benta ako ng pre-loved clothes sa Instagram — yung handle ko is @bea.thrift. Mostly mga branded items, thrifted pieces, curated outfits. Mga 2 years na ako nagbe-benta at okay naman ang benta pero ang dumi-dumi na ng Instagram feed ko — parang hindi professional. Gusto ko may legit na website na parang boutique yung dating. Budget ko ₱6,500 and sana gawin nating super maganda!",
+      "So basically nagbebenta ako ng thrifted fashion sa Instagram! @bea.thrift yung handle ko. 2 years na, okay ang benta pero gusto ko mas professional na — parang may sariling website na boutique ang dating. Budget ₱6,500, and sana aesthetic talaga!",
+      "Okay so I sell pre-loved clothes online — Instagram mostly. @bea.thrift. Problema ko, ang dumi na ng IG feed, hindi na maayos ang listings. Gusto ko proper website na aesthetic at parang boutique. ₱6,500 budget.",
+    ],
+    problem: [
+      "So yung issue ko, nagbebenta ako ng pre-loved fashion sa Instagram pero ang dumi-dumi ng feed ko ngayon. Gusto ko may proper portfolio website na aesthetic — parang yung mga legit boutiques sa abroad!",
+      "Yung Instagram ko, nagulo na yung feed — halo-halo na lahat. Hindi na maayos makita ng buyers ang items. Gusto ko may proper website na organized at aesthetic.",
+      "Feed ko sa IG parang sabog na. Hindi professional ang dating. Gusto ko proper website where buyers can browse nang maayos.",
+    ],
+    tagline: [
+      "Omg wait I have one! 'Wear the Story.' Super cute di ba? Wala akong physical store — online lang ako. Pero nasa Marikina ako kung curious ka.",
+      "'Wear the Story' yung tagline ko! Gusto ko yun sa website. Wala akong physical address — Marikina lang ako pero online shop.",
+      "May tagline ako — 'Wear the Story.' Sana makita yun sa website. Nasa Marikina ako pero online lang ang shop.",
+    ],
+    contactInfo: [
+      "Yung email ko bea.thrift@gmail.com. Instagram @bea.thrift. Wala akong landline — DM or email lang. Sana ilagay mo both sa website.",
+      "Email: bea.thrift@gmail.com. Instagram: @bea.thrift. Wala akong number na para sa business — DM or email lang.",
+      "bea.thrift@gmail.com at @bea.thrift sa IG. Yun lang ang contact ko. Wala akong hotline haha.",
+    ],
+    goal: [
+      "Gusto ko may proper online presence — yung buyers ko may mapuntahan na website na hindi lang Instagram. Para mas legit ang dating ng brand ko at mas madaling mag-browse ng items.",
+      "Goal ko may maayos na website na parang boutique. Para yung brand ko mas legit ang dating at hindi lang sa IG nakikita ang items.",
+      "Gusto ko may sariling website para hindi lang IG ang platform ko. Mas professional sana at mas madaling browse.",
+    ],
+    cta: [
+      "Kapag gusto nilang bumili, i-DM nila ako sa Instagram! Yung 'Shop Now' or 'DM to Order' button — linked sa @bea.thrift. Gusto ko visible yung Instagram everywhere sa site.",
+      "'DM to Order' or 'Shop Now' button na linked sa IG. Gusto ko lahat ng page may visible IG link.",
+      "Mag-DM sa @bea.thrift — yun ang action. 'DM to Order' button, malinaw at visible sa lahat ng page.",
+    ],
+    features: [
+      "Gusto ko may lookbook section! Yung mga outfits ko styled nicely. Baka may shop section din — pero focus muna sa aesthetic, yung vibe!",
+      "Lookbook muna — yung outfits ko sa one place. Baka may Shop section din. Basta aesthetic muna bago functionality.",
+      "Lookbook talaga yung want ko. Parang editorial fashion shoot. Shop section optional pero nice to have.",
+    ],
+    pages: [
+      "Hmm... Home, Lookbook, Shop, About me, Contact! Oh at baka Collections page din? Depende sa budget natin.",
+      "Home, Lookbook, Shop — yun ang sure. About me at Contact baka rin. Collections page kung kaya ng budget.",
+      "Home, Shop, Lookbook, About — yun ang prio. Contact page din sana.",
+    ],
+    existingContent: [
+      "Marami akong photos! Yung mga Instagram posts ko puwedeng gamitin — may 200+ items na ako. Yung About me section, ikaw na bahala sa pagkukuwento — basta cute ang dating.",
+      "IG photos ko puwede gamitin — madami. 200+ items. Yung About me section — ikaw na mag-write, basta cute!",
+      "Photos — marami sa IG. Gamitin mo na lahat. Descriptions pag-iisipan pa — ikaw na mag-suggest.",
+    ],
+    logo: [
+      "Wala pa akong proper logo! Gusto ko may cute logo — yung parang hanger or butterfly or something girly pero minimalist. Sana kasama sa scope na gumawa ka ng logo?",
+      "Logo wala pa! Gusto ko minimalist pero cute — parang hanger or simple flower? Kasama ba sa scope?",
+      "Wala akong logo — gusto ko may gawa ka nang simple na cute. Minimalist pero girly.",
+    ],
+    design: [
+      "Omg so gusto ko yung minimalist aesthetic pero may pop ng color — beige base, dusty rose accents? Or baka sage green? Nagbabago-bago pa ako honestly.",
+      "Minimalist aesthetic — beige base, dusty rose or sage green accents. Yung ZARA clean but with a cozy feel. Nagbabago-bago pa isip ko haha.",
+      "Beige at dusty rose — clean minimalist pero feminine. Or baka sage green? Hindi pa ako sure pero somewhere there.",
+    ],
+    reference: [
+      "Nakita ko yung Depop website and ZARA online — gusto ko yung clean grid layout ng ZARA pero yung cozy vibe ng Depop. Mix of both sana!",
+      "ZARA for the clean layout, Depop for the vibe — mix of both sana! May mga legit boutique sites din abroad na cute.",
+      "Depop at ZARA — yun ang combo gusto ko. Clean grid pero cozy at personal.",
+    ],
+    featuresDetail: [
+      "Gusto ko may Instagram feed embed sa homepage — yung live feed ko. Newsletter din sana para ma-notify sila ng bagong items! At contact form para sa custom orders.",
+      "IG feed embed sa homepage — live yung feed ko. Newsletter sana — para ma-update sila ng bagong arrivals. Contact form din.",
+      "Newsletter gusto ko! Para ma-notify sila. IG embed sa homepage sana din. Contact form para sa inquiries.",
+    ],
+    domain: [
+      "Wala pa akong domain. Gusto ko 'beathrift.com' or 'bea-thrift.shop' — yung may .shop parang cute! Ikaw na mag-register?",
+      "'beathrift.com' gusto ko! O baka 'bea-thrift.shop' — yung .shop domain parang cute. Ikaw na mag-arrange?",
+      "Wala pa domain. Gusto ko 'beathrift.com' — pwede? Ikaw na bahala sa pag-register.",
+    ],
+    seo: [
+      "Gusto ko ma-Google! Yung 'pre-loved clothes Philippines' or 'thrift shop Marikina'. At saka — kailangan ba ng privacy policy? May personal info kasi ako ng buyers.",
+      "'Pre-loved fashion Philippines' o 'thrift shop Marikina' — gusto ko lumabas sa Google. Privacy policy — need ba yun?",
+      "SEO para ma-find ng mga thrift shoppers. 'Affordable clothes Philippines' siguro. At privacy policy — kailangan ba kasi may buyer info ako?",
+    ],
+    audience: [
+      "Mga Gen Z and millennials mostly! Girls aged 16-30. 100% mobile sila, lahat sa Instagram nag-shop.",
+      "Gen Z girls mostly — 16-25. Lahat sa phone at IG. Wala talagang nagbu-browse sa desktop.",
+      "Target ko mga girls, 16-30. Mobile-first. IG shoppers. Pati ang friends nila.",
+    ],
+    deadline: [
+      "Baka mga 3 weeks? Hindi ako nagmamadali basta maganda ang output. Quality over speed!",
+      "3 weeks sana — pero okay lang kung konting longer basta super maganda. Quality muna!",
+      "Hindi urgent — gusto ko talagang maganda. 3-4 weeks okay na sa akin.",
+    ],
+    budget: [
+      "₱6,500 yung set ko. Pero if maganda talaga ang gawa mo baka may dagdag pa ako. Depende!",
+      "₱6,500 muna — pero kung sobrang ganda, baka dagdagan pa. Hahaha depende sa output!",
+      "Budget ₱6,500. Pero kung maarte ka at maganda talaga — pag-uusapan pa natin!",
+    ],
+    revision: [
+      "Hm gusto ko actually maraming revisions kasi maarte ako eh. Pwede bang 3 rounds?",
+      "3 rounds of revision — maarte kasi ako. Lagi may gusto baguhin haha.",
+      "Sana 3 revisions? Maarte talaga ako — lagi may konting gusto ko palitan.",
+    ],
+    mobile: [
+      "Mobile talaga! Lahat ng customers ko nag-browse sa phone. Dapat Instagram-worthy yung design.",
+      "100% mobile. Lahat ng buyers ko nasa phone — IG, TikTok. Desktop hindi na.",
+      "Mobile first talaga. IG-worthy ang design — para gusto nilang i-share.",
+    ],
+    social: [
+      "My Instagram is @bea.thrift! Gusto ko yung website linked doon — lahat ng links sana visible.",
+      "@bea.thrift sa IG — yun ang main. Lahat ng page may IG link sana.",
+      "IG: @bea.thrift. Visible sa lahat ng page — footer, header, lahat.",
+    ],
+    assets: [
+      "Susend ko yung product photos via Google Drive — marami akong pang-lookbook shots. Logo wala pa, kasama ba yun sa project? Yung About me content, ikaw na rin gumawa sana.",
+      "Google Drive ang send ng photos — marami. Logo wala pa, kasama ba? About me — ikaw na gumawa, cute lang sana.",
+      "Photos — Google Drive susend ko. Logo — wala pa, kasama ba sa scope? About me — ikaw na gumawa.",
+    ],
+    start: [
+      "Omg exciting! Sige send mo na yung proposal! Pero may gusto pa akong i-add — pwede ba may newsletter section?",
+      "Omg sige go! Send proposal — pero pag-usapan pa yung newsletter. Gusto ko yun.",
+      "Ayan na! Pero wait — kasama ba newsletter? Gusto ko yun bago mag-propose.",
+    ],
+    fallback1: [
+      "Ay hindi ko pa napag-isipan yan ng maayos eh. Pwede bang magpadala ka ng options? Gusto ko makita lahat bago ako mag-decide.",
+      "Hmm hindi pa sure — paki-send ng options para mapag-isipan ko. Gusto ko informed decision.",
+      "Hindi pa ako ready mag-decide doon — pero pwede kang mag-suggest options?",
+    ],
+    fallback2: [
+      "Actually nagbago na isip ko konti — baka mas gusto ko yung... hmm let me think ulit. Hihintayin mo lang ako ha?",
+      "Wait nakalimutan ko yung point ko. Baka may bago akong gusto — pahintay lang.",
+      "Actually iba pa yata gusto ko — let me think muna. Sorry haha!",
+    ],
   },
   "Sir Ramon": {
-    overview:        "Sure, I'll give you the full context. I'm a private tutor handling Math, Science, and English for students in Grades 4 through 12. I currently have around 15 to 20 students per week, and all bookings are done through text and phone calls — which has become very disorganized. Double bookings happen regularly, and I have no way to track which sessions have been paid or which are still outstanding. I want a professional booking website where parents can see my services, available time slots, and book directly with GCash payment. The goal is to have this running before the next school term, roughly 3 to 4 weeks from now, with a budget of ₱12,000.",
-    problem:         "Currently, parents and students text or call me to book sessions. It's very disorganized — double bookings happen frequently, and I have no way to track payments properly.",
-    tagline:         "My tagline is 'Learn with Confidence.' My home address is 45 Mabini St., Pasig City — but I'd rather not put that on the site. Just Pasig City is fine for location.",
-    contactInfo:     "My contact number is 0998-123-4567. Email is ramon.tutor@gmail.com. Those should be listed prominently so parents can reach me easily.",
-    goal:            "The primary goal is to let parents book sessions without calling me. I want to eliminate double bookings and provide a clear view of my available slots and service rates.",
-    cta:             "The main action I want visitors to take is to book a session directly. A 'Book a Session' button should be prominent on every page — ideally linked to the booking calendar.",
-    features:        "I need an online booking calendar where students can pick available slots. Also a payment gateway — GCash ideally. And a dashboard for me to manage all bookings.",
-    pages:           "I would need: Home, About (credentials), Services with pricing, Booking page, and a Testimonials page from past students.",
-    existingContent: "I have my credentials and a brief bio written. For testimonials, I'll need to ask past parents — I can collect 5 to 6 within the week. I don't have professional photos, just ID photos.",
-    logo:            "I don't have a logo. Something professional — perhaps my initials 'R.G.T.' in a clean serif font. Nothing too design-heavy. Blue or dark green to match the color scheme.",
-    design:          "Something professional and trustworthy. Blue or dark green — colors that convey competence. No bright colors or excessive graphics please.",
-    reference:       "I've seen some tutoring center websites abroad — Clean Tutor and Varsity Tutors. I like the structured layout: services listed clearly with pricing, and a simple booking form.",
-    featuresDetail:  "Beyond the booking calendar, I'd like a FAQ section for common parent questions, and possibly an email notification when a session is booked. No live chat — phone is fine.",
-    domain:          "I don't have a domain yet. 'ramontutor.com' or 'ramongtutoring.com' would work. Please factor in domain and one year of hosting in the final pricing.",
-    seo:             "Yes, SEO is important. I want to appear when parents search 'Math tutor Pasig' or 'private tutor Grades 4-12 Manila.' I'll also need a Privacy Policy since I'll be collecting parent contact information.",
-    audience:        "Parents looking for tutors for their children, grades 4-12. Mix of mobile and desktop — parents tend to use desktop for bookings.",
-    deadline:        "I would like to launch before the next school term — approximately 3-4 weeks from now.",
-    budget:          "₱12,000 is my budget. I understand this is a complex system, so I want it done correctly rather than quickly.",
-    revision:        "I would expect at least 2-3 revisions. I am detail-oriented so I will likely have specific feedback.",
-    mobile:          "It should work well on mobile too — some parents do book on their phones in the evening.",
-    social:          "I have a Facebook page for my tutoring services. I'd also like to link my academic credentials if possible.",
-    assets:          "I will prepare a Word document with my bio, credentials, service list and rates, and FAQ answers. I'll send photo assets and testimonials by end of the week. Please let me know the exact format you need.",
-    start:           "Understood. Please send a formal proposal including timeline, scope, and payment terms. I will review it carefully.",
-    fallback1:       "That's a reasonable question. To be precise — I currently handle 15-20 students per week across Math, Science, and English.",
-    fallback2:       "I appreciate the question. Please be thorough — I prefer to clarify everything upfront before we begin.",
+    overview: [
+      "Sure, I'll give you the full context. I'm a private tutor handling Math, Science, and English for students in Grades 4 through 12. I currently have around 15 to 20 students per week, and all bookings are done through text and phone calls — which has become very disorganized. Double bookings happen regularly, and I have no way to track which sessions have been paid or outstanding. I want a professional booking website where parents can book directly with GCash payment. Budget is ₱12,000.",
+      "I'll be direct. I am a private tutor — Math, Science, English, Grades 4-12. About 15-20 students weekly. The problem: all bookings come through text or calls. Double bookings happen, payments go untracked. I want a booking website with GCash integration. Budget: ₱12,000. Timeline: before the next school term.",
+      "I handle around 15 to 20 students weekly for tutoring across Math, Science, and English. Right now everything is managed through text messages and calls — it's chaotic. I want a clean, professional website where parents can book and pay online. ₱12,000 is my budget.",
+    ],
+    problem: [
+      "Currently, parents and students text or call me to book sessions. It's very disorganized — double bookings happen frequently, and I have no way to track payments properly.",
+      "The core issue is operational chaos — no system for bookings, no payment tracking. Text messages get lost. I've had multiple double-booking incidents. This needs to be solved with a proper platform.",
+      "Parents call or text to book. I manage it manually — spreadsheet and memory. Double bookings happen. Payments go unrecorded. It's unsustainable.",
+    ],
+    tagline: [
+      "My tagline is 'Learn with Confidence.' My home address is 45 Mabini St., Pasig City — but I'd rather not put that on the site. Just Pasig City is fine for location.",
+      "'Learn with Confidence' is my tagline. For the address, I prefer just the city — Pasig City. I don't want my full home address publicly listed.",
+      "I use 'Learn with Confidence' as my tagline. Address — please just say Pasig City. No full home address on the website.",
+    ],
+    contactInfo: [
+      "My contact number is 0998-123-4567. Email is ramon.tutor@gmail.com. Those should be listed prominently so parents can reach me easily.",
+      "0998-123-4567 and ramon.tutor@gmail.com. Both should be prominently visible — parents need to be able to reach me quickly.",
+      "Contact: 0998-123-4567 and ramon.tutor@gmail.com. Please make sure both are easy to find on every page.",
+    ],
+    goal: [
+      "The primary goal is to let parents book sessions without calling me. I want to eliminate double bookings and provide a clear view of my available slots and service rates.",
+      "I want a self-service booking system. Parents should be able to see available slots, book, and pay — without calling me. That eliminates double bookings.",
+      "The goal is simple: zero double bookings, zero untracked payments. A proper booking system where parents handle everything themselves.",
+    ],
+    cta: [
+      "The main action I want visitors to take is to book a session directly. A 'Book a Session' button should be prominent on every page — ideally linked to the booking calendar.",
+      "'Book a Session' — that's the primary call to action. Visible on every page. Not buried in a menu.",
+      "Primary CTA: 'Book a Session Now.' It should be on the homepage hero, in the header, and on the services page.",
+    ],
+    features: [
+      "I need an online booking calendar where students can pick available slots. Also a payment gateway — GCash ideally. And a dashboard for me to manage all bookings.",
+      "Core features: booking calendar, GCash payment, and a basic admin dashboard where I can see confirmed sessions. Everything else is secondary.",
+      "Booking calendar with slot selection, GCash integration, and a backend view for me. Those three are non-negotiable.",
+    ],
+    pages: [
+      "I would need: Home, About (credentials), Services with pricing, Booking page, and a Testimonials page from past students.",
+      "Home, About, Services, Booking, and Testimonials. Five pages. That should cover it.",
+      "Home, Services with pricing, About with credentials, Booking, and Testimonials. That's the minimum.",
+    ],
+    existingContent: [
+      "I have my credentials and a brief bio written. For testimonials, I'll need to ask past parents — I can collect 5 to 6 within the week. I don't have professional photos, just ID photos.",
+      "Bio and credentials are ready. Testimonials — I'll collect 5-6 from past parents this week. No professional photo, just a formal ID photo I can use.",
+      "Written content is mostly ready — bio, credentials, service descriptions. Testimonials I'll gather by end of week. Photo is just an ID shot.",
+    ],
+    logo: [
+      "I don't have a logo. Something professional — perhaps my initials 'R.G.T.' in a clean serif font. Nothing too design-heavy. Blue or dark green to match the color scheme.",
+      "No logo currently. I'd prefer something conservative — initials 'R.G.T.' in a serif font. Blue or dark green. Nothing flashy.",
+      "'R.G.T.' initials, serif font, professional colors. That's all I need. No icon — just clean typography.",
+    ],
+    design: [
+      "Something professional and trustworthy. Blue or dark green — colors that convey competence. No bright colors or excessive graphics please.",
+      "I want it to look professional and credible. Dark navy or forest green. Clean layout. No distracting graphics.",
+      "Professional, clean, trustworthy. Navy blue or dark green. Minimal graphics. Parents should feel confident booking here.",
+    ],
+    reference: [
+      "I've seen some tutoring center websites abroad — Clean Tutor and Varsity Tutors. I like the structured layout: services listed clearly with pricing, and a simple booking form.",
+      "Varsity Tutors has a clean structure I admire — services listed clearly, pricing transparent, booking straightforward. That's the benchmark.",
+      "Look at Varsity Tutors or Wyzant — that structured, professional layout is what I want. Clear services, pricing, and a clean booking flow.",
+    ],
+    featuresDetail: [
+      "Beyond the booking calendar, I'd like a FAQ section for common parent questions, and possibly an email notification when a session is booked. No live chat — phone is fine.",
+      "FAQ section for common questions, email confirmation after booking, and maybe an SMS notification. No live chat needed — I prefer parents call for complex concerns.",
+      "FAQ and email notifications are important. I get the same 5 questions repeatedly — a FAQ page will save me time. No chat widget needed.",
+    ],
+    domain: [
+      "I don't have a domain yet. 'ramontutor.com' or 'ramongtutoring.com' would work. Please factor in domain and one year of hosting in the final pricing.",
+      "'ramontutor.com' is my preference. Please include domain registration and one year of hosting in the total cost.",
+      "No domain yet. 'ramontutor.com' ideally. Include domain + hosting in the quote so I know the full cost upfront.",
+    ],
+    seo: [
+      "Yes, SEO is important. I want to appear when parents search 'Math tutor Pasig' or 'private tutor Grades 4-12 Manila.' I'll also need a Privacy Policy since I'll be collecting parent contact information.",
+      "SEO matters to me — I want to rank for 'private tutor Pasig' and similar searches. And yes, I need a Privacy Policy. I'll be collecting parent data.",
+      "I want local SEO — parents searching for tutors in Pasig should find me. Privacy Policy is mandatory since I collect contact info.",
+    ],
+    audience: [
+      "Parents looking for tutors for their children, grades 4-12. Mix of mobile and desktop — parents tend to use desktop for bookings.",
+      "Primary audience: parents, 30-50 years old. They tend to research and book on desktop but may browse on mobile. Both need to work well.",
+      "Parents of students Grades 4-12. Somewhat tech-literate, mix of mobile and desktop. The booking flow must be simple enough for non-technical users.",
+    ],
+    deadline: [
+      "I would like to launch before the next school term — approximately 3-4 weeks from now.",
+      "3 to 4 weeks. I need it live before the new school term starts — that's the hard deadline.",
+      "The school term starts in roughly a month. I want the site up and tested at least a week before that. So 3 weeks maximum.",
+    ],
+    budget: [
+      "₱12,000 is my budget. I understand this is a complex system, so I want it done correctly rather than quickly.",
+      "₱12,000. I'd rather invest properly than get a half-functioning product. Quality and reliability matter more than price to me.",
+      "Budget is ₱12,000. I'm willing to pay fairly for quality work. That said, I expect it to be done right the first time.",
+    ],
+    revision: [
+      "I would expect at least 2-3 revisions. I am detail-oriented so I will likely have specific feedback.",
+      "2 to 3 revisions should be sufficient. I review things carefully so my feedback will be precise and actionable.",
+      "At minimum 2 revisions. I'll be thorough in my review — but my feedback will always be specific, not vague.",
+    ],
+    mobile: [
+      "It should work well on mobile too — some parents do book on their phones in the evening.",
+      "Mobile must function properly. Some parents browse in the evening on their phones. The booking form needs to be easy on mobile.",
+      "Responsive design is important. Evening bookings tend to come from mobile — it has to work seamlessly on smaller screens.",
+    ],
+    social: [
+      "I have a Facebook page for my tutoring services. I'd also like to link my academic credentials if possible.",
+      "Facebook page for my tutoring — please link it. I'd also like to display my academic credentials somewhere on the site.",
+      "Facebook link, yes. And if possible, a section for my academic credentials and certifications — builds trust with parents.",
+    ],
+    assets: [
+      "I will prepare a Word document with my bio, credentials, service list and rates, and FAQ answers. I'll send photo assets and testimonials by end of the week. Please let me know the exact format you need.",
+      "I'll send a Word doc with everything — bio, services, rates, FAQ. Photos and testimonials by Friday. Just tell me what format works best.",
+      "Prepared content: bio, credentials, services, and FAQ in a Word document. I'll deliver testimonials by end of week. Specify your preferred format.",
+    ],
+    start: [
+      "Understood. Please send a formal proposal including timeline, scope, and payment terms. I will review it carefully.",
+      "Proceed. I'll wait for your formal proposal — include timeline, deliverables, and payment structure. I'll respond within 24 hours.",
+      "Please draft the proposal and send it to my email. I'll review it carefully before signing off.",
+    ],
+    fallback1: [
+      "That's a reasonable question. To be precise — I currently handle 15-20 students per week across Math, Science, and English.",
+      "Good question. I average 15-20 sessions per week. Peak is at the start of each quarter when parents enroll for remedial.",
+      "To be specific — 15 to 20 students per week. Most are repeat clients.",
+    ],
+    fallback2: [
+      "I appreciate the question. Please be thorough — I prefer to clarify everything upfront before we begin.",
+      "That's something I haven't fully decided yet. Make a recommendation and I'll evaluate it.",
+      "I'll defer to your professional judgment on that — but please explain your reasoning so I understand the decision.",
+    ],
   },
 };
+
+// Pick a random item from an array
+function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // Demo mode — returns per-persona responses based on what the student asked
 function getMockResponse(
@@ -386,75 +770,75 @@ function getMockResponse(
       u.includes("maunawaan") || u.includes("overview") || u.includes("project mo") ||
       u.includes("project ninyo") || u.includes("business mo") || u.includes("business ninyo") ||
       (u.includes("project") && (u.includes("describe") || u.includes("explain") || u.includes("ano")))
-    ) return pd.overview;
+    ) return dr(pd.overview);
     // Problem / pain point
     if (u.includes("problem") || u.includes("problema") || u.includes("issue") || u.includes("challenge") || u.includes("struggle"))
-      return pd.problem;
+      return dr(pd.problem);
     // Tagline / slogan / address / location
     if (u.includes("tagline") || u.includes("slogan") || u.includes("address") || u.includes("location") || u.includes("saan") || u.includes("nasaan"))
-      return pd.tagline;
+      return dr(pd.tagline);
     // Contact info
     if (u.includes("contact number") || u.includes("email") || u.includes("phone number") || u.includes("numero") || u.includes("contact info") || u.includes("reach"))
-      return pd.contactInfo;
+      return dr(pd.contactInfo);
     // Main goal of website
     if (u.includes("goal") || u.includes("layunin") || u.includes("purpose") || u.includes("main purpose") || u.includes("ano ang gusto") || u.includes("what do you want"))
-      return pd.goal;
+      return dr(pd.goal);
     // Call to action
     if (u.includes("call to action") || u.includes("cta") || u.includes("gusto nilang gawin") || u.includes("action") || u.includes("next step") || u.includes("what should visitors"))
-      return pd.cta;
+      return dr(pd.cta);
     // Features / functionality
     if (u.includes("ordering") || u.includes("order") || u.includes("cart") || u.includes("catalog") || u.includes("function") || u.includes("feature") || u.includes("kailangan"))
-      return pd.features;
+      return dr(pd.features);
     // Pages
     if (u.includes("pages") || u.includes("page") || u.includes("section") || u.includes("include") || u.includes("kasama"))
-      return pd.pages;
+      return dr(pd.pages);
     // Existing content — text, photos, videos
     if (u.includes("content") || u.includes("photos") || u.includes("pictures") || u.includes("images") || u.includes("litrato") || u.includes("existing") || u.includes("mayroon na") || u.includes("meron na"))
-      return pd.existingContent;
+      return dr(pd.existingContent);
     // Logo
     if (u.includes("logo") || u.includes("icon") || u.includes("brand mark"))
-      return pd.logo;
+      return dr(pd.logo);
     // Design / colors / style
     if (u.includes("design") || u.includes("color") || u.includes("kulay") || u.includes("style") || u.includes("aesthetic") || u.includes("feel") || u.includes("look") || u.includes("font"))
-      return pd.design;
+      return dr(pd.design);
     // Reference sites / inspiration
     if (u.includes("reference") || u.includes("inspiration") || u.includes("example") || u.includes("similar") || u.includes("like") || u.includes("website na gusto"))
-      return pd.reference;
+      return dr(pd.reference);
     // Additional features — maps, newsletter, chat, etc.
     if (u.includes("map") || u.includes("newsletter") || u.includes("chat") || u.includes("form") || u.includes("contact form") || u.includes("features") || u.includes("functionality"))
-      return pd.featuresDetail;
+      return dr(pd.featuresDetail);
     // Domain and hosting
     if (u.includes("domain") || u.includes("hosting") || u.includes("url") || u.includes("website address") || u.includes(".com") || u.includes("server"))
-      return pd.domain;
+      return dr(pd.domain);
     // SEO / legal / privacy
     if (u.includes("seo") || u.includes("google") || u.includes("search engine") || u.includes("privacy") || u.includes("terms") || u.includes("legal") || u.includes("policy"))
-      return pd.seo;
+      return dr(pd.seo);
     // Target audience / users / device
     if (u.includes("audience") || u.includes("users") || u.includes("target") || u.includes("customer") || u.includes("sino") || u.includes("who"))
-      return pd.audience;
+      return dr(pd.audience);
     // Deadline / timeline
     if (u.includes("deadline") || u.includes("kailan") || u.includes("when") || u.includes("finish") || u.includes("launch") || u.includes("week"))
-      return pd.deadline;
+      return dr(pd.deadline);
     // Budget
     if (u.includes("budget") || u.includes("bayad") || u.includes("cost") || u.includes("price") || u.includes("magkano"))
-      return pd.budget;
+      return dr(pd.budget);
     // Revisions
     if (u.includes("revision") || u.includes("changes") || u.includes("revise") || u.includes("rounds"))
-      return pd.revision;
+      return dr(pd.revision);
     // Mobile / responsive
     if (u.includes("mobile") || u.includes("phone") || u.includes("responsive") || u.includes("device"))
-      return pd.mobile;
+      return dr(pd.mobile);
     // Social media links
     if (u.includes("social") || u.includes("facebook") || u.includes("instagram") || u.includes("tiktok") || u.includes("shopee") || u.includes("social media"))
-      return pd.social;
+      return dr(pd.social);
     // Assets — logo files, photos, written content
     if (u.includes("asset") || u.includes("file") || u.includes("send") || u.includes("provide") || u.includes("submit") || u.includes("ibigay") || u.includes("susend") || u.includes("magsend"))
-      return pd.assets;
+      return dr(pd.assets);
     // Start / proposal
     if (u.includes("start") || u.includes("go") || u.includes("sige") || u.includes("deal") || u.includes("okay") || u.includes("proposal"))
-      return pd.start;
-    if (modelCount <= 1) return pd.fallback1;
- return pd.fallback2;
+      return dr(pd.start);
+    if (modelCount <= 1) return dr(pd.fallback1);
+ return dr(pd.fallback2);
  }
 
  // Proposal phase — per-persona flavor

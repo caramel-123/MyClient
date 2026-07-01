@@ -154,32 +154,57 @@ function GeminiLogo({ size = 16 }: { size?: number }) {
  );
 }
 
-// Response option derivation 
-function deriveResponseOptions(response: string): { label: string; text: string; icon: string }[] {
- const opts: { label: string; text: string; icon: string }[] = [
- { label: "Standard", text: response, icon: "" },
- ];
+// Acknowledgment openers — react to client message before asking next question
+const ACK_OPENERS = [
+  "Ay ganun ba, okay!",
+  "Oks, gets ko!",
+  "Naiintindihan ko!",
+  "Grabe, interesting yun!",
+  "Ay sige, noted!",
+  "Ah gets, salamat sa info!",
+  "Clear, salamat!",
+  "Oks, nakuha ko yun!",
+  "Wow okay, noted yun!",
+  "Ah I see, salamat!",
+];
 
- // Short variant: extract just the core question
- const questions = response.match(/[^.!?—\-]*\?/g) ?? [];
- const shortQ = questions[questions.length - 1]?.trim();
- if (shortQ && shortQ.length > 10 && shortQ.length < response.length * 0.82) {
- opts.push({ label: "Short", text: shortQ, icon: "" });
- }
+function pickAck(seed: string): string {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return ACK_OPENERS[h % ACK_OPENERS.length];
+}
 
- // Casual variant: brief opener + lowercase first char
- const casual = `Hm, tanong ko lang — ${response.charAt(0).toLowerCase()}${response.slice(1)}`;
- if (casual !== response && opts.length < 3) {
- opts.push({ label: "Casual", text: casual, icon: "" });
- }
+// Response option derivation
+function deriveResponseOptions(response: string, lastClientMsg?: string): { label: string; text: string; icon: string }[] {
+  const ack = pickAck(lastClientMsg ?? response);
 
- return opts;
+  // Standard: acknowledge + full response
+  const standard = `${ack} ${response.charAt(0).toUpperCase()}${response.slice(1)}`;
+  const opts: { label: string; text: string; icon: string }[] = [
+    { label: "Standard", text: standard, icon: "" },
+  ];
+
+  // Short variant: just the core question (no ack)
+  const questions = response.match(/[^.!?—\-]*\?/g) ?? [];
+  const shortQ = questions[questions.length - 1]?.trim();
+  if (shortQ && shortQ.length > 10 && shortQ.length < response.length * 0.82) {
+    opts.push({ label: "Short", text: shortQ, icon: "" });
+  }
+
+  // Casual variant: relaxed opener + acknowledge + question
+  const coreQ = shortQ ?? response;
+  const casual = `${ack} So — ${coreQ.charAt(0).toLowerCase()}${coreQ.slice(1)}`;
+  if (opts.length < 3) {
+    opts.push({ label: "Casual", text: casual, icon: "" });
+  }
+
+  return opts;
 }
 
 // Contextual tip bar 
-function TipBar({ text, response, onUseResponse }: { text: string; response: string | null; onUseResponse: (r: string) => void }) {
+function TipBar({ text, response, lastClientMsg, onUseResponse }: { text: string; response: string | null; lastClientMsg?: string; onUseResponse: (r: string) => void }) {
  const [expanded, setExpanded] = useState(false);
- const options = response ? deriveResponseOptions(response) : [];
+ const options = response ? deriveResponseOptions(response, lastClientMsg) : [];
 
  return (
  <div className= "mx-4 mb-2 rounded-xl overflow-hidden" style={{ background: "#F8F2E7", border: "1px solid #E8DCC8" }}>
@@ -698,6 +723,16 @@ export default function SimulationPage() {
   setContextualTip(generateContextualTip(updated, phase, persona));
   setContextualResponse(generateContextualResponse(updated, phase, persona));
 
+  // Auto-advance discovery → proposal when client signals readiness AND all topics done
+  if (phase === "discovery") {
+    const lastReply = reply.toLowerCase();
+    const clientSignaledReady = /sige|go na|deal|proposal|proceed|start na|magsimula na|tara na|ready na/.test(lastReply);
+    const nowCovered = coveredTopicIndex(updated, persona) >= getPersonaTopics(persona).length;
+    if (clientSignaledReady && nowCovered) {
+      setTimeout(() => jumpToPhase("proposal"), 1200);
+    }
+  }
+
   // Detect client agreement on proposal
   if (phase === "proposal" && proposalSentToClient) {
     const lastReply = reply.toLowerCase();
@@ -799,26 +834,50 @@ export default function SimulationPage() {
   async function generateWebsite() {
     setBuilding(true);
     const buildPromptText = uiPrompt || `Build a professional website for ${persona.name}'s ${persona.business}.`;
-    const systemPrompt = `You are an expert web developer. Generate a complete, beautiful, single-file HTML website based on this design brief. Requirements:\n- Use inline CSS only (no external stylesheets except Google Fonts via @import)\n- Include all pages as sections with smooth scroll navigation\n- Make it mobile responsive\n- Use the brand colors and style described\n- Include realistic placeholder content from the proposal\n- Make it look like a real, polished website\n\nDesign Brief:\n${buildPromptText}\n\nClient: ${persona.name} — ${persona.business}\n\nReturn ONLY the complete HTML code, nothing else.`;
+    const userMessage = `You are an expert web developer. Generate a complete, beautiful, single-file HTML website based on this design brief.\n\nRequirements:\n- Use inline CSS only (no external stylesheets except Google Fonts via @import)\n- Include all pages as sections with smooth scroll navigation\n- Make it mobile responsive\n- Use the brand colors and style described\n- Include realistic placeholder content from the proposal\n- Make it look like a real, polished, production-ready website\n- No placeholder images — use CSS gradients or emoji as visual accents instead\n\nDesign Brief:\n${buildPromptText}\n\nClient: ${persona.name} — ${persona.business}\n\nReturn ONLY the complete HTML code starting with <!DOCTYPE html>, nothing else.`;
     try {
-      if (!GEMINI_API_KEY_BUILD) {
-        const fallbackHtml = generateFallbackHtml(persona);
-        setGeneratedHtml(fallbackHtml);
-        const blob = new Blob([fallbackHtml], { type: "text/html" });
-        setBuildLink(URL.createObjectURL(blob));
-        return;
-      }
-      const res = await fetch(GEMINI_URL_BUILD, {
+      // Try Claude via Vercel proxy first
+      const claudeRes = await fetch("/api/claude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: systemPrompt }] }], generationConfig: { temperature: 0.8, maxOutputTokens: 4000 } }),
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 8000,
+          messages: [{ role: "user", content: userMessage }],
+        }),
       });
-      const data = await res.json();
-      let html: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-      // Strip markdown code fences if present
-      html = html.replace(/^```html\n?/i, "").replace(/\n?```$/i, "").trim();
-      setGeneratedHtml(html);
-      const blob = new Blob([html], { type: "text/html" });
+      if (claudeRes.ok) {
+        const data = await claudeRes.json();
+        let html: string = data.content?.[0]?.text ?? "";
+        html = html.replace(/^```html\n?/i, "").replace(/\n?```$/i, "").trim();
+        if (html.length > 200) {
+          setGeneratedHtml(html);
+          const blob = new Blob([html], { type: "text/html" });
+          setBuildLink(URL.createObjectURL(blob));
+          return;
+        }
+      }
+      // Fallback: Gemini
+      if (GEMINI_API_KEY_BUILD) {
+        const res = await fetch(GEMINI_URL_BUILD, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: userMessage }] }], generationConfig: { temperature: 0.8, maxOutputTokens: 8000 } }),
+        });
+        const data = await res.json();
+        let html: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+        html = html.replace(/^```html\n?/i, "").replace(/\n?```$/i, "").trim();
+        if (html.length > 200) {
+          setGeneratedHtml(html);
+          const blob = new Blob([html], { type: "text/html" });
+          setBuildLink(URL.createObjectURL(blob));
+          return;
+        }
+      }
+      // Static fallback
+      const fallbackHtml = generateFallbackHtml(persona);
+      setGeneratedHtml(fallbackHtml);
+      const blob = new Blob([fallbackHtml], { type: "text/html" });
       setBuildLink(URL.createObjectURL(blob));
     } catch {
       const fallbackHtml = generateFallbackHtml(persona);
@@ -1056,6 +1115,7 @@ export default function SimulationPage() {
  <TipBar
  text={contextualTip}
  response={contextualResponse}
+ lastClientMsg={[...messages].reverse().find(m => m.role === "model")?.text}
  onUseResponse={(r) => {
  setInput(r);
  setContextualTip(null);
