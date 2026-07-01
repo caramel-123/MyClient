@@ -67,7 +67,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <p className="text-sm mb-1" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>Good day 👋</p>
+            <p className="text-sm mb-1" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>Good day </p>
             <h1 className="text-3xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>Welcome back, Juan!</h1>
           </div>
           <Link

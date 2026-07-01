@@ -32,7 +32,7 @@ export default function LoginPage() {
             <div className="flex gap-3 items-end">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#2D2D2D", color: "#F5C542" }}>AI</div>
               <div className="rounded-2xl rounded-bl-sm px-4 py-3 text-sm" style={{ background: "rgba(255,255,255,0.7)", color: "#2D2D2D", fontFamily: "Inter, sans-serif" }}>
-                Hi! Pwede mo ba akong tulungan? Gusto ko magpagawa ng website. Budget ₱5,000 😊
+                Hi! Pwede mo ba akong tulungan? Gusto ko magpagawa ng website. Budget ₱5,000 
               </div>
             </div>
             <div className="flex justify-end">
@@ -43,7 +43,7 @@ export default function LoginPage() {
             <div className="flex gap-3 items-end">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#2D2D2D", color: "#F5C542" }}>AI</div>
               <div className="rounded-2xl rounded-bl-sm px-4 py-3 text-sm" style={{ background: "rgba(255,255,255,0.7)", color: "#2D2D2D", fontFamily: "Inter, sans-serif" }}>
-                Customers keep missing our menu. Lagi silang nagtatanong! 😅
+                Customers keep missing our menu. Lagi silang nagtatanong! 
               </div>
             </div>
           </div>
