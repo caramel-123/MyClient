@@ -596,6 +596,8 @@ export default function SimulationPage() {
   const [generatedHtml, setGeneratedHtml] = useState("");
   const [buildLink, setBuildLink] = useState("");
   const [building, setBuilding] = useState(false);
+  const [clientApprovedQA, setClientApprovedQA] = useState(false);
+  const [clientRequestedRevision, setClientRequestedRevision] = useState(false);
  const [sidebarWidth, setSidebarWidth] = useState(288);
  const [proposalSplit, setProposalSplit] = useState(55); // percentage of main area
  const [proposalChatPanelWidth, setProposalChatPanelWidth] = useState(260);
@@ -740,6 +742,20 @@ export default function SimulationPage() {
     if (agreed) setClientAgreedProposal(true);
   }
 
+  // QA: detect revision request vs final approval
+  if (phase === "qa") {
+    const lastReply = reply.toLowerCase();
+    const approved = /okay na|looks good|maganda na|love it|perfect|done na|sending payment|sige na|approve|listo na|ayos na/.test(lastReply);
+    const revision = /pwede.*ba|can you|can you change|palitan|baguhin|ayusin|fix|change|update|move|revise|dagdag|add|kulang|mali|hindi maganda|hindi okay|adjust/.test(lastReply);
+    if (approved) {
+      setClientApprovedQA(true);
+      setClientRequestedRevision(false);
+    } else if (revision) {
+      setClientRequestedRevision(true);
+      setClientApprovedQA(false);
+    }
+  }
+
  const minExchanges = phase === "discovery" ? 7 : 2;
  if (userCount >= minExchanges) setShowSubmit(true);
  } catch {
@@ -758,7 +774,7 @@ export default function SimulationPage() {
     prompt: clientAgreedProposal,
     build: uiPrompt.length > 0,
     qa: buildLink.length > 0,
-    delivery: false, // unlocked by QA flow
+    delivery: clientApprovedQA,
   };
 
   function advancePhase() {
@@ -946,6 +962,9 @@ export default function SimulationPage() {
  setMessages(newMessages);
  setDeliverableUrl( "");
  setShowDeliverableInput(false);
+ // Reset QA states so client reviews fresh each submission
+ setClientApprovedQA(false);
+ setClientRequestedRevision(false);
  setLoading(true);
  try {
  const reply = await sendToGemini(newMessages, persona, phase);
@@ -1153,21 +1172,46 @@ export default function SimulationPage() {
 
  {/* Advance phase */}
  {showSubmit && (
- <div className= "flex-shrink-0 px-4 pb-2 pt-2 border-t" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
- <button
- onClick={advancePhase}
- className= "w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90"
- style={{
- background: phase === "delivery" ?"#10B981" : "#F5C542",
- color: phase === "delivery" ?"#FFFFFF" : "#050505",
- }}
- >
- {phase === "delivery" ? (
- <><CheckCircle className= "w-4 h-4" /> Close Project & Collect ₱{Number(persona.budget.replace(/[^\d]/g, "")).toLocaleString()}</>
- ) : (
- <>Move to {PHASE_LABELS[PHASE_ORDER[phaseIndex + 1]]} <ChevronRight className= "w-4 h-4" /></>
- )}
- </button>
+ <div className="flex-shrink-0 px-4 pb-2 pt-2 border-t space-y-2" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
+   {/* QA: client wants revision — must go back to Build */}
+   {phase === "qa" && clientRequestedRevision && !clientApprovedQA && (
+     <div className="rounded-2xl p-3 text-xs" style={{ background: "#FFF3E0", border: "1px solid #FED7AA" }}>
+       <p className="font-semibold mb-1" style={{ color: "#9A3412" }}>Client requested revisions</p>
+       <p style={{ color: "#7C2D12" }}>Update your design in the Build tab, then resubmit the link here for QA.</p>
+     </div>
+   )}
+   {phase === "qa" && clientRequestedRevision && !clientApprovedQA ? (
+     <button
+       onClick={() => {
+         setGeneratedHtml("");
+         setBuildLink("");
+         setClientRequestedRevision(false);
+         jumpToPhase("build", true);
+       }}
+       className="w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90"
+       style={{ background: "#8B5CF6", color: "#fff" }}
+     >
+       <ChevronRight className="w-4 h-4 rotate-180" /> Revise — Go back to Build
+     </button>
+   ) : (
+     <button
+       onClick={advancePhase}
+       disabled={phase === "qa" && !clientApprovedQA}
+       className="w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+       style={{
+         background: phase === "delivery" ? "#10B981" : "#F5C542",
+         color: phase === "delivery" ? "#FFFFFF" : "#050505",
+       }}
+     >
+       {phase === "delivery" ? (
+         <><CheckCircle className="w-4 h-4" /> Close Project & Collect ₱{Number(persona.budget.replace(/[^\d]/g, "")).toLocaleString()}</>
+       ) : phase === "qa" ? (
+         <>{clientApprovedQA ? <><CheckCircle className="w-4 h-4" /> Client approved — Move to Delivery</> : <>Waiting for client approval...</>}</>
+       ) : (
+         <>Move to {PHASE_LABELS[PHASE_ORDER[phaseIndex + 1]]} <ChevronRight className="w-4 h-4" /></>
+       )}
+     </button>
+   )}
  </div>
  )}
 
