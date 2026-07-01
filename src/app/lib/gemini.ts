@@ -187,89 +187,144 @@ export async function sendToGemini(
  return text;
 }
 
-// Per-persona discovery responses 
+// Per-persona discovery responses
 type DiscoveryResponses = {
  overview: string;
  problem: string;
+ tagline: string;
+ contactInfo: string;
+ goal: string;
+ cta: string;
  features: string;
  pages: string;
+ existingContent: string;
+ logo: string;
  design: string;
+ reference: string;
+ featuresDetail: string;
+ domain: string;
+ seo: string;
  audience: string;
  deadline: string;
  budget: string;
  revision: string;
  mobile: string;
  social: string;
+ assets: string;
  start: string;
  fallback1: string;
  fallback2: string;
 };
 
 const PERSONA_DISCOVERY: Record<string, DiscoveryResponses> = {
-"Maria Santos": {
- overview: "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na karinderya dito sa aming barangay —'Santos Karinderya' ang pangalan namin. Mga 5 taon na kaming nagtitinda ng lutong pagkain — adobo, sinigang, kare-kare, lahat ng Pinoy favorites. Lagi kaming puno ng customers tuwing tanghali, pero ang problema, lagi silang nagta-DM sa aming Facebook para magtanong ng menu at presyo kahit bukas na kami. Dati okay pa, pero ngayon sobra na yung messages — nakaka-miss na kami ng orders. Gusto ko sana may website na maipapakita sa kanila para hindi na kailangang mag-DM pa. Budget ko ₱5,000 lang pero sana kaya pa rin natin gawing maayos.",
- problem: "Yung problema ko, lagi nagta-DM sa Messenger yung customers para magtanong kung anong ulam available ngayon. Super dami ng messages, di ko na nasasagot lahat Gusto ko na lang may makita silang menu sa website.",
- features: "Display lang muna ng menu! Hindi pa ready para sa online ordering — baka next year na lang yun kapag may delivery boy na kami.",
- pages: "Hmm... Home, Menu, About us, tsaka Contact siguro? Di ko pa iniisip yun eh, ikaw na bahala sa layout!",
- design: "Gusto ko warm colors — orange or yellow para appetizing ang dating May logo kami pero hindi pa naka-digitize, puwede bang gawin mo?",
- audience: "Mga taga-kapitbahay mostly, laging nag-oorder ng tanghalian at merienda. Mostly sa phone sila, hindi laptop.",
- deadline: "Sana within 2 weeks? May pagdating kasi ng sponsor namin sa bahay next month, gusto ko presentable na.",
- budget: "₱5,000 lang budget ko Kasama na ba doon yung revisions kung may gusto akong baguhin?",
- revision: "Sana may dalawang beses na revision included! Baka may gusto akong palitan pagkakita ng output.",
- mobile: "Oo mobile-friendly dapat! Wala namang laptop yung mga tao rito, cellphone lang talaga.",
- social: "Meron kaming Facebook page,'Santos Karinderya' yung name. Sana may link doon sa website!",
- start: "Sige! Go na tayo. I-send mo na yung proposal mo ha? Kasama yung timeline at breakdown ng bayad.",
- fallback1: "Oo ganun. Karinderya lang kami pero maraming customers. Lagi silang nagtatanong kaya gusto ko na may website na kami",
- fallback2: "Wala pa akong specific idea doon. Ikaw na bahala, ikaw ang expert! Basta mukhang masaya at food-related.",
- },
-"Kuya Jun": {
- overview: "Uy sige sasabihin ko! Nagbebenta ako online ng iba't ibang produkto — pangunahin yung cellphone accessories tapos may snacks din, basic goods, yung mga kailangan sa bahay. Ginagawa ko ito through Facebook at TikTok mostly, at may Shopee shop din ako. Problema ko, lahat ng orders naka-chats lang sa Messenger at DM — walang maayos na listahan ng products kaya minsan nakaka-miss ako ng orders. Yung mga buyers ko, mga kabataan mostly, lahat sa phone. Gusto ko may sariling website na parang catalog para ma-browse nila lahat without mag-message muna. Budget ko ₱8,000 at gusto ko ASAP — within one week kung kaya.",
- problem: "Nagtitinda ako online — cellphone accessories, snacks, basic goods. Problema ko, lagi nakaka-miss ng orders kasi naka-chats lang lahat. Gusto ko may sarili na listing ng products.",
- features: "Gusto ko may catalog ng products at may GCash payment option. Pero wag muna yung complicated na shopping cart — simple lang muna.",
- pages: "Products page lang talaga yung priority. Baka Home din. Wag nang marami, magastos.",
- design: "Wala akong pakialam sa design basta maayos at mabilis. Yung asul or pula — color ng tindahan ko. Simple lang.",
- audience: "Mga kabataan mostly, 18-30. Lahat naman sa phone nagbibili ngayon. Desktop wala na.",
- deadline: "ASAP! Sa loob ng isang linggo dapat. Kailangan ko na kasi marami na nagtatanong.",
- budget: "₱8,000 sabi ko, pero kung mahal pa yun sabihin mo agad ha? Hindi ako nagpapaalog ng matagal.",
- revision: "Isa lang revision pwede pa. Pero sana tama na sa first try para hindi na abutin pa.",
- mobile: "Mobile talaga yung priority. Yung buyers ko walang laptop, sa TikTok sila nagdidiscover ng products.",
- social: "May Facebook page ako'Jun Online Shop'. Pati Shopee link — isama mo na rin kung kaya.",
- start: "Sige go. Send mo na yung proposal. Wag nang matagal, kelangan ko na yung website.",
- fallback1: "Oo ganun yun. Busy ako kaya sagutin mo na lang lahat ng tanong mo ngayon para hindi na paulit-ulit.",
- fallback2: "Di ko alam yun, ikaw na mag-decide. Basta gumana at hindi slow.",
- },
-"Ate Bea": {
- overview: "Omg okay so let me explain! So nagbe-benta ako ng pre-loved clothes sa Instagram — yung handle ko is @bea.thrift. Mostly mga branded items, thrifted pieces, curated outfits. Mga 2 years na ako nagbe-benta online at okay naman ang benta pero ang dumi-dumi na ng Instagram feed ko — parang hindi professional. Gusto ko may legit na website na parang boutique yung dating, yung mga buyers ko makikita nila lahat ng items sa isang maayos na place. Yung aesthetic ko is minimalist — beige, dusty rose, or sage green. Target ko mga Gen Z girls, 16-30, lahat sa phone at Instagram. Budget ko ₱6,500 and sana gawin nating super maganda!",
- problem: "So yung issue ko, nagbebenta ako ng pre-loved fashion sa Instagram pero ang dumi-dumi ng feed ko ngayon Gusto ko may proper portfolio website na aesthetic — parang yung mga legit boutiques sa abroad!",
- features: "Gusto ko may lookbook section! Yung mga outfits ko styled nicely. Baka may shop section din — pero focus muna sa aesthetic, yung vibe!",
- pages: "Hmm... Home, Lookbook, Shop, About me, Contact! Oh at baka Collections page din? Depende sa budget natin",
- design: "Omg so gusto ko yung minimalist aesthetic pero may pop ng color — beige base, dusty rose accents? Or baka sage green? Nagbabago-bago pa ako honestly",
- audience: "Mga Gen Z and millennials mostly! Girls aged 16-30. 100% mobile sila, lahat sa Instagram nag-shop.",
- deadline: "Baka mga 3 weeks? Hindi ako nagmamadali basta maganda ang output Quality over speed!",
- budget: "₱6,500 yung set ko. Pero if maganda talaga ang gawa mo baka may dagdag pa ako Depende!",
- revision: "Hm gusto ko actually maraming revisions kasi maarte ako eh Pwede bang 3 rounds?",
- mobile: "Mobile talaga! Lahat ng customers ko nag-browse sa phone. Dapat Instagram-worthy yung design.",
- social: "My Instagram is @bea.thrift! Gusto ko yung website linked doon — lahat ng links sana visible.",
- start: "Omg exciting! Sige send mo na yung proposal! Pero may gusto pa akong i-add — pwede ba may newsletter section?",
- fallback1: "Ay hindi ko pa napag-isipan yan ng maayos eh. Pwede bang magpadala ka ng options? Gusto ko makita lahat bago ako mag-decide",
- fallback2: "Actually nagbago na isip ko konti — baka mas gusto ko yung... hmm let me think ulit. Hihintayin mo lang ako ha?",
- },
-"Sir Ramon": {
- overview: "Sure, I'll give you the full context. I'm a private tutor handling Math, Science, and English for students in Grades 4 through 12. I currently have around 15 to 20 students per week, and all bookings are done through text and phone calls — which has become very disorganized. Double bookings happen regularly, and I have no way to track which sessions have been paid or which are still outstanding. I want a professional booking website where parents can see my services, available time slots, and book directly with GCash payment. The goal is to have this running before the next school term, roughly 3 to 4 weeks from now, with a budget of ₱12,000.",
- problem: "Currently, parents and students text or call me to book sessions. It's very disorganized — double bookings happen frequently, and I have no way to track payments properly.",
- features: "I need an online booking calendar where students can pick available slots. Also a payment gateway — GCash ideally. And a dashboard for me to manage all bookings.",
- pages: "I would need: Home, About (credentials), Services with pricing, Booking page, and a Testimonials page from past students.",
- design: "Something professional and trustworthy. Blue or dark green — colors that convey competence. No bright colors or excessive graphics please.",
- audience: "Parents looking for tutors for their children, grades 4-12. Mix of mobile and desktop — parents tend to use desktop for bookings.",
- deadline: "I would like to launch before the next school term — approximately 3-4 weeks from now.",
- budget: "₱12,000 is my budget. I understand this is a complex system, so I want it done correctly rather than quickly.",
- revision: "I would expect at least 2-3 revisions. I am detail-oriented so I will likely have specific feedback.",
- mobile: "It should work well on mobile too — some parents do book on their phones in the evening.",
- social: "I have a Facebook page for my tutoring services. I'd also like to link my academic credentials if possible.",
- start: "Understood. Please send a formal proposal including timeline, scope, and payment terms. I will review it carefully.",
- fallback1: "That's a reasonable question. To be precise — I currently handle 15-20 students per week across Math, Science, and English.",
- fallback2: "I appreciate the question. Please be thorough — I prefer to clarify everything upfront before we begin.",
- },
+  "Maria Santos": {
+    overview:        "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na karinderya dito sa aming barangay — 'Santos Karinderya' ang pangalan namin. Mga 5 taon na kaming nagtitinda ng lutong pagkain — adobo, sinigang, kare-kare, lahat ng Pinoy favorites. Lagi kaming puno ng customers tuwing tanghali, pero ang problema, lagi silang nagta-DM sa aming Facebook para magtanong ng menu at presyo kahit bukas na kami. Dati okay pa, pero ngayon sobra na yung messages — nakaka-miss na kami ng orders. Gusto ko sana may website na maipapakita sa kanila para hindi na kailangang mag-DM pa. Budget ko ₱5,000 lang pero sana kaya pa rin natin gawing maayos.",
+    problem:         "Yung problema ko, lagi nagta-DM sa Messenger yung customers para magtanong kung anong ulam available ngayon. Super dami ng messages, di ko na nasasagot lahat. Gusto ko na lang may makita silang menu sa website.",
+    tagline:         "Ang slogan namin ay 'Lutong-Luto, Puso ang Puhunan!' Yung address namin — Blk 4 Lot 12, Sampaguita St., Barangay San Jose, Quezon City. Malapit lang sa palengke.",
+    contactInfo:     "Yung contact number namin 0917-555-2341, tapos may email din kami — santoskarinderya@gmail.com. Yung Facebook page namin 'Santos Karinderya' — yan lang meron kami ngayon.",
+    goal:            "Ang gusto ko, makita lang ng mga customers yung menu namin online para hindi na kailangang mag-DM. Tapos sana may contact info din para makuha nila yung number namin kung gusto nilang magtanong.",
+    cta:             "Gusto ko na kapag nakita nila yung website, tawagan na nila kami o pumunta na sa tindahan. Simple lang — yung 'Call Us' button sana visible agad.",
+    features:        "Display lang muna ng menu! Hindi pa ready para sa online ordering — baka next year na lang yun kapag may delivery boy na kami.",
+    pages:           "Hmm... Home, Menu, About us, tsaka Contact siguro? Di ko pa iniisip yun eh, ikaw na bahala sa layout!",
+    existingContent: "Wala pa akong photos na maganda ng pagkain, kailangan pang mag-shoot. Yung menu — may listahan kami sa notebook pero hindi pa typed. Ikaw na bahala sa content kung kaya mo.",
+    logo:            "May logo kami pero nasa papel lang — hindi pa naka-digitize. Pwede bang gawin mo or improve? Yung design namin parang nakasulat lang na 'SK' sa bilog.",
+    design:          "Gusto ko warm colors — orange or yellow para appetizing ang dating. Yung font sana malinaw at malaki para matanda ring makabasa.",
+    reference:       "Ay, nakita ko yung website ng Max's Restaurant — gusto ko yung dating nila. Clean pero appetizing. Hindi masyadong complicated.",
+    featuresDetail:  "Sana may Google Maps para malaman nila kung nasaan kami. At yung Facebook page namin, may link doon sa website. Contact form din sana para makapag-message ang customers.",
+    domain:          "Wala pa kaming domain name. Ikaw na bahala kung ano ang maganda — baka 'santoskarinderya.com' o ganun? Hosting din wala kami, ikaw na mag-arrange.",
+    seo:             "Gusto ko makita kami sa Google pag nag-search ng 'karinderya sa Quezon City'! Yung privacy policy — hindi ko pa alam kung kailangan, ikaw na mag-decide.",
+    audience:        "Mga taga-kapitbahay mostly, laging nag-oorder ng tanghalian at merienda. Mostly sa phone sila, hindi laptop.",
+    deadline:        "Sana within 2 weeks? May pagdating kasi ng sponsor namin sa bahay next month, gusto ko presentable na.",
+    budget:          "₱5,000 lang budget ko. Kasama na ba doon yung revisions kung may gusto akong baguhin?",
+    revision:        "Sana may dalawang beses na revision included! Baka may gusto akong palitan pagkakita ng output.",
+    mobile:          "Oo mobile-friendly dapat! Wala namang laptop yung mga tao rito, cellphone lang talaga.",
+    social:          "Meron kaming Facebook page, 'Santos Karinderya' yung name. Sana may link doon sa website!",
+    assets:          "Magsesend ako ng mga litrato ng pagkain — baka bukas pa lang kasi kailangan ko pang mag-shoot. Yung menu list i-type ko na rin. Logo file wala pa akong digital copy, ikaw na bahala.",
+    start:           "Sige! Go na tayo. I-send mo na yung proposal mo ha? Kasama yung timeline at breakdown ng bayad.",
+    fallback1:       "Oo ganun. Karinderya lang kami pero maraming customers. Lagi silang nagtatanong kaya gusto ko na may website na kami.",
+    fallback2:       "Wala pa akong specific idea doon. Ikaw na bahala, ikaw ang expert! Basta mukhang masaya at food-related.",
+  },
+  "Kuya Jun": {
+    overview:        "Uy sige sasabihin ko! Nagbebenta ako online ng iba't ibang produkto — pangunahin yung cellphone accessories tapos may snacks din, basic goods, yung mga kailangan sa bahay. Ginagawa ko ito through Facebook at TikTok mostly, at may Shopee shop din ako. Problema ko, lahat ng orders naka-chats lang sa Messenger at DM — walang maayos na listahan ng products kaya minsan nakaka-miss ako ng orders. Yung mga buyers ko, mga kabataan mostly, lahat sa phone. Gusto ko may sariling website na parang catalog para ma-browse nila lahat without mag-message muna. Budget ko ₱8,000 at gusto ko ASAP — within one week kung kaya.",
+    problem:         "Nagtitinda ako online — cellphone accessories, snacks, basic goods. Problema ko, lagi nakaka-miss ng orders kasi naka-chats lang lahat. Gusto ko may sarili na listing ng products.",
+    tagline:         "Wala akong tagline. 'Jun Online Shop' lang yung name ko. Address ko nasa Caloocan — 123 Rizal Ave, Caloocan City. Hindi naman kailangan ng address sa site, online lang naman ako.",
+    contactInfo:     "0912-888-4567 yung number ko. Wala akong email — Facebook Messenger lang. Ikaw na bahala kung kailangan pa ng email para sa website.",
+    goal:            "Gusto ko may catalog lang na makita ng buyers ko — yung lahat ng products ko naka-display ng maayos. Para hindi na sila kailangang mag-DM para magtanong ng available ba.",
+    cta:             "Kapag nakita nila yung product, mag-message sila sa akin sa Messenger or TikTok. Yung 'Order Now' button sana linked doon. Simple lang.",
+    features:        "Gusto ko may catalog ng products at may GCash payment option. Pero wag muna yung complicated na shopping cart — simple lang muna.",
+    pages:           "Products page lang talaga yung priority. Baka Home din. Wag nang marami, magastos.",
+    existingContent: "May product photos na ako — mga nagawa ko na sa Shopee listing. Pwede ko i-send. Yung descriptions, ilagay mo na lang base sa products.",
+    logo:            "Wala akong logo. Yung Shopee ko, text lang yung store name. Gawa ka na lang ng simple — 'JOS' o yung buong name. Basta hindi mahal.",
+    design:          "Wala akong pakialam sa design basta maayos at mabilis. Yung asul or pula — color ng tindahan ko. Simple lang.",
+    reference:       "Shopee lang ang alam ko. Yung dating ng Shopee — clear yung products, may price visible agad. Ganun lang gusto ko.",
+    featuresDetail:  "GCash payment sana para makapag-order agad. Baka search bar din para madaling hanapin ng buyers yung product. Wag nang iba — baka mahal pa.",
+    domain:          "Wala akong domain. Ikaw na bahala. Yung mura lang — o baka free hosting muna para makita ko kung worth it.",
+    seo:             "Gusto ko makita sa Google. Yung 'cellphone accessories Caloocan' or ganun. Privacy policy — wala akong alam doon, ikaw na bahala kung kailangan.",
+    audience:        "Mga kabataan mostly, 18-30. Lahat naman sa phone nagbibili ngayon. Desktop wala na.",
+    deadline:        "ASAP! Sa loob ng isang linggo dapat. Kailangan ko na kasi marami na nagtatanong.",
+    budget:          "₱8,000 sabi ko, pero kung mahal pa yun sabihin mo agad ha? Hindi ako nagpapaalog ng matagal.",
+    revision:        "Isa lang revision pwede pa. Pero sana tama na sa first try para hindi na abutin pa.",
+    mobile:          "Mobile talaga yung priority. Yung buyers ko walang laptop, sa TikTok sila nagdidiscover ng products.",
+    social:          "May Facebook page ako 'Jun Online Shop'. Pati Shopee link — isama mo na rin kung kaya.",
+    assets:          "Susuguin ko yung product photos sa Messenger. Mga 30 products lang muna. Descriptions ko rin i-send — copy paste ko na lang sa Shopee.",
+    start:           "Sige go. Send mo na yung proposal. Wag nang matagal, kelangan ko na yung website.",
+    fallback1:       "Oo ganun yun. Busy ako kaya sagutin mo na lang lahat ng tanong mo ngayon para hindi na paulit-ulit.",
+    fallback2:       "Di ko alam yun, ikaw na mag-decide. Basta gumana at hindi slow.",
+  },
+  "Ate Bea": {
+    overview:        "Omg okay so let me explain! So nagbe-benta ako ng pre-loved clothes sa Instagram — yung handle ko is @bea.thrift. Mostly mga branded items, thrifted pieces, curated outfits. Mga 2 years na ako nagbe-benta online at okay naman ang benta pero ang dumi-dumi na ng Instagram feed ko — parang hindi professional. Gusto ko may legit na website na parang boutique yung dating, yung mga buyers ko makikita nila lahat ng items sa isang maayos na place. Yung aesthetic ko is minimalist — beige, dusty rose, or sage green. Target ko mga Gen Z girls, 16-30, lahat sa phone at Instagram. Budget ko ₱6,500 and sana gawin nating super maganda!",
+    problem:         "So yung issue ko, nagbebenta ako ng pre-loved fashion sa Instagram pero ang dumi-dumi ng feed ko ngayon. Gusto ko may proper portfolio website na aesthetic — parang yung mga legit boutiques sa abroad!",
+    tagline:         "Omg wait I have one! 'Wear the Story.' Super cute di ba? Wala akong physical store — online lang ako. Pero nasa Marikina ako kung curious ka.",
+    contactInfo:     "Yung email ko bea.thrift@gmail.com. Instagram @bea.thrift. Wala akong landline — DM or email lang. Sana ilagay mo both sa website.",
+    goal:            "Gusto ko may proper online presence — yung buyers ko may mapuntahan na website na hindi lang Instagram. Para mas legit ang dating ng brand ko at mas madaling mag-browse ng items.",
+    cta:             "Kapag gusto nilang bumili, i-DM nila ako sa Instagram! Yung 'Shop Now' or 'DM to Order' button — linked sa @bea.thrift. Gusto ko visible yung Instagram everywhere sa site.",
+    features:        "Gusto ko may lookbook section! Yung mga outfits ko styled nicely. Baka may shop section din — pero focus muna sa aesthetic, yung vibe!",
+    pages:           "Hmm... Home, Lookbook, Shop, About me, Contact! Oh at baka Collections page din? Depende sa budget natin.",
+    existingContent: "Marami akong photos! Yung mga Instagram posts ko puwedeng gamitin — may 200+ items na ako. Yung About me section, ikaw na bahala sa pagkukuwento — basta cute ang dating.",
+    logo:            "Wala pa akong proper logo! Gusto ko may cute logo — yung parang hanger or butterfly or something girly pero minimalist. Sana kasama sa scope na gumawa ka ng logo?",
+    design:          "Omg so gusto ko yung minimalist aesthetic pero may pop ng color — beige base, dusty rose accents? Or baka sage green? Nagbabago-bago pa ako honestly.",
+    reference:       "Nakita ko yung Depop website and ZARA online — gusto ko yung clean grid layout ng ZARA pero yung cozy vibe ng Depop. Mix of both sana!",
+    featuresDetail:  "Gusto ko may Instagram feed embed sa homepage — yung live feed ko. Newsletter din sana para ma-notify sila ng bagong items! At contact form para sa custom orders.",
+    domain:          "Wala pa akong domain. Gusto ko 'beathrift.com' or 'bea-thrift.shop' — yung may .shop parang cute! Ikaw na mag-register?",
+    seo:             "Gusto ko ma-Google! Yung 'pre-loved clothes Philippines' or 'thrift shop Marikina'. At saka — kailangan ba ng privacy policy? May personal info kasi ako ng buyers.",
+    audience:        "Mga Gen Z and millennials mostly! Girls aged 16-30. 100% mobile sila, lahat sa Instagram nag-shop.",
+    deadline:        "Baka mga 3 weeks? Hindi ako nagmamadali basta maganda ang output. Quality over speed!",
+    budget:          "₱6,500 yung set ko. Pero if maganda talaga ang gawa mo baka may dagdag pa ako. Depende!",
+    revision:        "Hm gusto ko actually maraming revisions kasi maarte ako eh. Pwede bang 3 rounds?",
+    mobile:          "Mobile talaga! Lahat ng customers ko nag-browse sa phone. Dapat Instagram-worthy yung design.",
+    social:          "My Instagram is @bea.thrift! Gusto ko yung website linked doon — lahat ng links sana visible.",
+    assets:          "Susend ko yung product photos via Google Drive — marami akong pang-lookbook shots. Logo wala pa, kasama ba yun sa project? Yung About me content, ikaw na rin gumawa sana.",
+    start:           "Omg exciting! Sige send mo na yung proposal! Pero may gusto pa akong i-add — pwede ba may newsletter section?",
+    fallback1:       "Ay hindi ko pa napag-isipan yan ng maayos eh. Pwede bang magpadala ka ng options? Gusto ko makita lahat bago ako mag-decide.",
+    fallback2:       "Actually nagbago na isip ko konti — baka mas gusto ko yung... hmm let me think ulit. Hihintayin mo lang ako ha?",
+  },
+  "Sir Ramon": {
+    overview:        "Sure, I'll give you the full context. I'm a private tutor handling Math, Science, and English for students in Grades 4 through 12. I currently have around 15 to 20 students per week, and all bookings are done through text and phone calls — which has become very disorganized. Double bookings happen regularly, and I have no way to track which sessions have been paid or which are still outstanding. I want a professional booking website where parents can see my services, available time slots, and book directly with GCash payment. The goal is to have this running before the next school term, roughly 3 to 4 weeks from now, with a budget of ₱12,000.",
+    problem:         "Currently, parents and students text or call me to book sessions. It's very disorganized — double bookings happen frequently, and I have no way to track payments properly.",
+    tagline:         "My tagline is 'Learn with Confidence.' My home address is 45 Mabini St., Pasig City — but I'd rather not put that on the site. Just Pasig City is fine for location.",
+    contactInfo:     "My contact number is 0998-123-4567. Email is ramon.tutor@gmail.com. Those should be listed prominently so parents can reach me easily.",
+    goal:            "The primary goal is to let parents book sessions without calling me. I want to eliminate double bookings and provide a clear view of my available slots and service rates.",
+    cta:             "The main action I want visitors to take is to book a session directly. A 'Book a Session' button should be prominent on every page — ideally linked to the booking calendar.",
+    features:        "I need an online booking calendar where students can pick available slots. Also a payment gateway — GCash ideally. And a dashboard for me to manage all bookings.",
+    pages:           "I would need: Home, About (credentials), Services with pricing, Booking page, and a Testimonials page from past students.",
+    existingContent: "I have my credentials and a brief bio written. For testimonials, I'll need to ask past parents — I can collect 5 to 6 within the week. I don't have professional photos, just ID photos.",
+    logo:            "I don't have a logo. Something professional — perhaps my initials 'R.G.T.' in a clean serif font. Nothing too design-heavy. Blue or dark green to match the color scheme.",
+    design:          "Something professional and trustworthy. Blue or dark green — colors that convey competence. No bright colors or excessive graphics please.",
+    reference:       "I've seen some tutoring center websites abroad — Clean Tutor and Varsity Tutors. I like the structured layout: services listed clearly with pricing, and a simple booking form.",
+    featuresDetail:  "Beyond the booking calendar, I'd like a FAQ section for common parent questions, and possibly an email notification when a session is booked. No live chat — phone is fine.",
+    domain:          "I don't have a domain yet. 'ramontutor.com' or 'ramongtutoring.com' would work. Please factor in domain and one year of hosting in the final pricing.",
+    seo:             "Yes, SEO is important. I want to appear when parents search 'Math tutor Pasig' or 'private tutor Grades 4-12 Manila.' I'll also need a Privacy Policy since I'll be collecting parent contact information.",
+    audience:        "Parents looking for tutors for their children, grades 4-12. Mix of mobile and desktop — parents tend to use desktop for bookings.",
+    deadline:        "I would like to launch before the next school term — approximately 3-4 weeks from now.",
+    budget:          "₱12,000 is my budget. I understand this is a complex system, so I want it done correctly rather than quickly.",
+    revision:        "I would expect at least 2-3 revisions. I am detail-oriented so I will likely have specific feedback.",
+    mobile:          "It should work well on mobile too — some parents do book on their phones in the evening.",
+    social:          "I have a Facebook page for my tutoring services. I'd also like to link my academic credentials if possible.",
+    assets:          "I will prepare a Word document with my bio, credentials, service list and rates, and FAQ answers. I'll send photo assets and testimonials by end of the week. Please let me know the exact format you need.",
+    start:           "Understood. Please send a formal proposal including timeline, scope, and payment terms. I will review it carefully.",
+    fallback1:       "That's a reasonable question. To be precise — I currently handle 15-20 students per week across Math, Science, and English.",
+    fallback2:       "I appreciate the question. Please be thorough — I prefer to clarify everything upfront before we begin.",
+  },
 };
 
 // Demo mode — returns per-persona responses based on what the student asked
@@ -322,41 +377,83 @@ function getMockResponse(
 
  const pd = PERSONA_DISCOVERY[persona.name];
 
- if (phase === "discovery" && pd) {
- if (
- u.includes( "ikwento") || u.includes( "kwento") || u.includes( "tell me about") ||
- u.includes( "describe") || u.includes( "ano po yung") || u.includes( "ano yung") ||
- u.includes( "ano ang") || u.includes( "what is your") || u.includes( "what's your") ||
- u.includes( "full picture") || u.includes( "buong picture") || u.includes( "elaborate") ||
- u.includes( "maunawaan") || u.includes( "maliwanag") || u.includes( "overview") ||
- u.includes( "ano po ba") || u.includes( "paki-describe") || u.includes( "project mo") ||
- u.includes( "project ninyo") || u.includes( "business mo") || u.includes( "business ninyo") ||
- (u.includes( "project") && (u.includes( "describe") || u.includes( "explain") || u.includes( "ano")))
- )
- return pd.overview;
- if (u.includes( "problem") || u.includes( "problema") || u.includes( "issue") || u.includes( "concern") || u.includes( "challenge") || u.includes( "struggle"))
- return pd.problem;
- if (u.includes( "ordering") || u.includes( "order") || u.includes( "cart") || u.includes( "catalog") || u.includes( "feature") || u.includes( "function"))
- return pd.features;
- if (u.includes( "pages") || u.includes( "page") || u.includes( "section") || u.includes( "include") || u.includes( "kasama"))
- return pd.pages;
- if (u.includes( "design") || u.includes( "color") || u.includes( "kulay") || u.includes( "style") || u.includes( "aesthetic") || u.includes( "brand") || u.includes( "look"))
- return pd.design;
- if (u.includes( "audience") || u.includes( "users") || u.includes( "target") || u.includes( "customer") || u.includes( "sino"))
- return pd.audience;
- if (u.includes( "deadline") || u.includes( "kailan") || u.includes( "when") || u.includes( "finish") || u.includes( "launch") || u.includes( "week"))
- return pd.deadline;
- if (u.includes( "budget") || u.includes( "bayad") || u.includes( "cost") || u.includes( "price") || u.includes( "magkano"))
- return pd.budget;
- if (u.includes( "revision") || u.includes( "changes") || u.includes( "revise") || u.includes( "edit"))
- return pd.revision;
- if (u.includes( "mobile") || u.includes( "phone") || u.includes( "responsive") || u.includes( "device"))
- return pd.mobile;
- if (u.includes( "social") || u.includes( "facebook") || u.includes( "instagram") || u.includes( "link") || u.includes( "tiktok"))
- return pd.social;
- if (u.includes( "start") || u.includes( "go") || u.includes( "sige") || u.includes( "deal") || u.includes( "okay") || u.includes( "proposal"))
- return pd.start;
- if (modelCount <= 1) return pd.fallback1;
+  if (phase === "discovery" && pd) {
+    // Overview / business description
+    if (
+      u.includes("ikwento") || u.includes("kwento") || u.includes("tell me about") ||
+      u.includes("describe") || u.includes("ano po yung") || u.includes("ano yung") ||
+      u.includes("full picture") || u.includes("buong picture") || u.includes("elaborate") ||
+      u.includes("maunawaan") || u.includes("overview") || u.includes("project mo") ||
+      u.includes("project ninyo") || u.includes("business mo") || u.includes("business ninyo") ||
+      (u.includes("project") && (u.includes("describe") || u.includes("explain") || u.includes("ano")))
+    ) return pd.overview;
+    // Problem / pain point
+    if (u.includes("problem") || u.includes("problema") || u.includes("issue") || u.includes("challenge") || u.includes("struggle"))
+      return pd.problem;
+    // Tagline / slogan / address / location
+    if (u.includes("tagline") || u.includes("slogan") || u.includes("address") || u.includes("location") || u.includes("saan") || u.includes("nasaan"))
+      return pd.tagline;
+    // Contact info
+    if (u.includes("contact number") || u.includes("email") || u.includes("phone number") || u.includes("numero") || u.includes("contact info") || u.includes("reach"))
+      return pd.contactInfo;
+    // Main goal of website
+    if (u.includes("goal") || u.includes("layunin") || u.includes("purpose") || u.includes("main purpose") || u.includes("ano ang gusto") || u.includes("what do you want"))
+      return pd.goal;
+    // Call to action
+    if (u.includes("call to action") || u.includes("cta") || u.includes("gusto nilang gawin") || u.includes("action") || u.includes("next step") || u.includes("what should visitors"))
+      return pd.cta;
+    // Features / functionality
+    if (u.includes("ordering") || u.includes("order") || u.includes("cart") || u.includes("catalog") || u.includes("function") || u.includes("feature") || u.includes("kailangan"))
+      return pd.features;
+    // Pages
+    if (u.includes("pages") || u.includes("page") || u.includes("section") || u.includes("include") || u.includes("kasama"))
+      return pd.pages;
+    // Existing content — text, photos, videos
+    if (u.includes("content") || u.includes("photos") || u.includes("pictures") || u.includes("images") || u.includes("litrato") || u.includes("existing") || u.includes("mayroon na") || u.includes("meron na"))
+      return pd.existingContent;
+    // Logo
+    if (u.includes("logo") || u.includes("icon") || u.includes("brand mark"))
+      return pd.logo;
+    // Design / colors / style
+    if (u.includes("design") || u.includes("color") || u.includes("kulay") || u.includes("style") || u.includes("aesthetic") || u.includes("feel") || u.includes("look") || u.includes("font"))
+      return pd.design;
+    // Reference sites / inspiration
+    if (u.includes("reference") || u.includes("inspiration") || u.includes("example") || u.includes("similar") || u.includes("like") || u.includes("website na gusto"))
+      return pd.reference;
+    // Additional features — maps, newsletter, chat, etc.
+    if (u.includes("map") || u.includes("newsletter") || u.includes("chat") || u.includes("form") || u.includes("contact form") || u.includes("features") || u.includes("functionality"))
+      return pd.featuresDetail;
+    // Domain and hosting
+    if (u.includes("domain") || u.includes("hosting") || u.includes("url") || u.includes("website address") || u.includes(".com") || u.includes("server"))
+      return pd.domain;
+    // SEO / legal / privacy
+    if (u.includes("seo") || u.includes("google") || u.includes("search engine") || u.includes("privacy") || u.includes("terms") || u.includes("legal") || u.includes("policy"))
+      return pd.seo;
+    // Target audience / users / device
+    if (u.includes("audience") || u.includes("users") || u.includes("target") || u.includes("customer") || u.includes("sino") || u.includes("who"))
+      return pd.audience;
+    // Deadline / timeline
+    if (u.includes("deadline") || u.includes("kailan") || u.includes("when") || u.includes("finish") || u.includes("launch") || u.includes("week"))
+      return pd.deadline;
+    // Budget
+    if (u.includes("budget") || u.includes("bayad") || u.includes("cost") || u.includes("price") || u.includes("magkano"))
+      return pd.budget;
+    // Revisions
+    if (u.includes("revision") || u.includes("changes") || u.includes("revise") || u.includes("rounds"))
+      return pd.revision;
+    // Mobile / responsive
+    if (u.includes("mobile") || u.includes("phone") || u.includes("responsive") || u.includes("device"))
+      return pd.mobile;
+    // Social media links
+    if (u.includes("social") || u.includes("facebook") || u.includes("instagram") || u.includes("tiktok") || u.includes("shopee") || u.includes("social media"))
+      return pd.social;
+    // Assets — logo files, photos, written content
+    if (u.includes("asset") || u.includes("file") || u.includes("send") || u.includes("provide") || u.includes("submit") || u.includes("ibigay") || u.includes("susend") || u.includes("magsend"))
+      return pd.assets;
+    // Start / proposal
+    if (u.includes("start") || u.includes("go") || u.includes("sige") || u.includes("deal") || u.includes("okay") || u.includes("proposal"))
+      return pd.start;
+    if (modelCount <= 1) return pd.fallback1;
  return pd.fallback2;
  }
 
@@ -465,174 +562,449 @@ function getMockResponse(
 type TopicEntry = { tip: string; response: string; covered: (all: string) => boolean };
 
 const PERSONA_TOPICS: Record<string, TopicEntry[]> = {
-"Maria Santos": [
- {
- tip: "Start by asking your client to describe their business and project — get the full picture first.",
- response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
- covered: (a) => /karinderya|food business|menu.*website|website.*menu|5 taon|nagtatanong.*facebook|facebook.*nagtatanong/.test(a),
- },
- {
- tip: "Ask why customers keep messaging her on Facebook instead of checking a website.",
- response: "Naiintindihan ko po! Bakit po kaya nagta-DM pa rin yung mga customers ninyo — wala ba silang makita online ngayon?",
- covered: (a) => /messenger|dm|nagtatanong|menu online|customers.*message|message.*customer/.test(a),
- },
- {
- tip: "Ask if she just wants to show the menu, or also take online orders.",
- response: "Para mas malinaw ang scope — gusto po ba ninyong display lang ng menu, o kailangan din ng online ordering para makapag-order agad ang customers?",
- covered: (a) => /display lang|ordering|order online|menu.*show|show.*menu/.test(a),
- },
- {
- tip: "Ask which pages she wants — Home, Menu, About, Contact?",
- response: "Anong mga pages po ang gusto ninyong kasama? Halimbawa: Home, Menu, About us, Contact?",
- covered: (a) => /pages|home.*menu|about|contact/.test(a),
- },
- {
- tip: "Ask her preferred colors — she likely wants something warm and appetizing.",
- response: "May preferred colors po ba kayo para sa website? Yung maganda para sa food business — warm tones like orange or yellow?",
- covered: (a) => /orange|yellow|warm color|color.*food|brand color/.test(a),
- },
- {
- tip: "Ask who her typical customers are and if they use phones or laptops.",
- response: "Sino po mostly yung mga customers ninyo — mga taga-kapitbahay ba? At mostly phone ba sila o laptop ang ginagamit?",
- covered: (a) => /customers|kapitbahay|phone|mobile|laptop/.test(a),
- },
- {
- tip: "Ask when she needs the site ready — she mentioned an upcoming event.",
- response: "Kelan po kailangan? May specific na petsa ba o may darating na event na gusto ninyong ready na yung website?",
- covered: (a) => /deadline|kailan|event|2 weeks|next month|launch/.test(a),
- },
- {
- tip: "Clarify if her ₱5,000 budget includes revisions.",
- response: "Yung ₱5,000 budget po — kasama na ba doon yung mga revisions kung may gusto kayong baguhin pagkakita ng output?",
- covered: (a) => /revision|5,000|budget.*kasama|kasama.*budget/.test(a),
- },
- ],
-"Kuya Jun": [
- {
- tip: "Start by asking your client to describe their business and project — get the full picture first.",
- response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
- covered: (a) => /cellphone|accessories|snacks|online.*sell|tinda|facebook.*tiktok|shopee|catalog.*products/.test(a),
- },
- {
- tip: "Ask what specific products he sells and how he currently manages orders.",
- response: "Ano pong mga produkto yung ibinebenta ninyo, at paano kayo currently nag-e-manage ng orders ngayon?",
- covered: (a) => /products|produkto|accessories|snacks|goods|order.*manage|manage.*order/.test(a),
- },
- {
- tip: "Ask if he needs a catalog only, or also GCash/payment integration.",
- response: "Para maayos ang scope — catalog lang po ba ng products, o kailangan din ng GCash payment feature?",
- covered: (a) => /gcash|payment|catalog|cart|checkout/.test(a),
- },
- {
- tip: "Ask which pages are the priority — he'll likely say Products first.",
- response: "Anong pages po ang priority? Products page muna, o kailangan din ng Home at About?",
- covered: (a) => /pages|products page|priority.*page/.test(a),
- },
- {
- tip: "Ask about colors — he'll want something simple and clean.",
- response: "May preferred colors po ba? Simple lang — o may existing brand color yung tindahan ninyo?",
- covered: (a) => /color|asul|pula|blue|red|simple.*design/.test(a),
- },
- {
- tip: "Confirm his users are mostly young and mobile — ask to be sure.",
- response: "Yung mga buyers ninyo — mostly kabataan ba sa phone? Para masigurado ang mobile design priority.",
- covered: (a) => /kabataan|young|phone|mobile|tiktok/.test(a),
- },
- {
- tip: "He said ASAP — pin down an exact deadline before agreeing.",
- response: "Sinabi ninyong ASAP — ilang araw o linggo ang exact na target? Bago ako mag-commit gusto kong malinaw yung deadline.",
- covered: (a) => /1 week|asap.*days|deadline.*days|days.*deadline|within/.test(a),
- },
- {
- tip: "Confirm if the ₱8,000 budget is fixed or has any room for negotiation.",
- response: "Yung ₱8,000 — fixed po ba yun o may flexibility pa? At kasama na ba ang revisions doon?",
- covered: (a) => /8,000|budget.*fixed|revision.*kasama/.test(a),
- },
- ],
-"Ate Bea": [
- {
- tip: "Start by asking your client to describe their business and project — get the full picture first.",
- response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
- covered: (a) => /bea.thrift|pre-loved|instagram.*fashion|fashion.*instagram|boutique|thrift/.test(a),
- },
- {
- tip: "Ask what's wrong with her current Instagram setup — why does she need a website?",
- response: "Para mas maintindihan ang need ninyo — ano pong specific na problema sa Instagram setup ninyo ngayon na gusto ninyong maayos ng website?",
- covered: (a) => /instagram.*problem|feed|disorganized|proper.*portfolio|portfolio.*proper/.test(a),
- },
- {
- tip: "Ask if she wants a lookbook portfolio, an online shop, or both.",
- response: "Gusto po ba ninyong portfolio/lookbook lang, o may actual shop din na puwedeng mag-order ang customers?",
- covered: (a) => /lookbook|shop|portfolio|collection|browse/.test(a),
- },
- {
- tip: "She mentioned'cute and aesthetic' — ask for specific inspirations or reference sites.",
- response: "May reference sites ba kayo o brands na gusto ninyong maging look ng site? Para ma-capture yung aesthetic na gusto ninyo.",
- covered: (a) => /reference|inspiration|brand.*like|like.*brand|mood board/.test(a),
- },
- {
- tip: "She tends to be indecisive — lock down color palette before you start.",
- response: "Para maisagawa na natin, ano po yung final na color palette? Beige base? Dusty rose? Sage green? Piliin na natin ngayon para hindi magbago-bago.",
- covered: (a) => /beige|dusty rose|sage|color.*final|final.*color|palette/.test(a),
- },
- {
- tip: "Ask who her target buyers are — she'll say Gen Z girls on Instagram.",
- response: "Sino po yung typical buyers ninyo — anong age group at platform sila mostly gumagamit?",
- covered: (a) => /gen z|girls|age|instagram.*buyer|buyer.*instagram/.test(a),
- },
- {
- tip: "She said quality over speed — clarify an actual deadline so scope doesn't creep.",
- response: "Para maayos ang timeline — kahit approximate, kailan po gusto ninyong ma-launch? At ilang rounds of revision ang inaasahan ninyo?",
- covered: (a) => /3 weeks|weeks|launch.*date|revision.*rounds/.test(a),
- },
- {
- tip: "Ask if her ₱6,500 is firm, or if she'd extend for extra features she keeps adding.",
- response: "Yung ₱6,500 — firm po ba yun? Lagi po kayong may bagong gusto i-add, so gusto ko lang maging malinaw sa budget bago tayo magpatuloy.",
- covered: (a) => /6,500|budget.*firm|firm.*budget|extra.*budget/.test(a),
- },
- ],
-"Sir Ramon": [
- {
- tip: "Start by asking your client to describe their business and project — get the full picture first.",
- response: "Before we begin, could you tell me more about your tutoring business and what you're hoping to build? I'd like to understand the full picture before we get into the details.",
- covered: (a) => /tutor|booking|double book|gcash.*payment|payment.*gcash|15.*student|20.*student|school term/.test(a),
- },
- {
- tip: "Ask how he currently handles scheduling — texting? Manual calendar?",
- response: "How do you currently manage bookings, Sir? Is it through text, a manual calendar, or something else?",
- covered: (a) => /text.*book|book.*text|manual|spreadsheet|current.*schedul/.test(a),
- },
- {
- tip: "Ask what features the booking system must have — calendar, payment, notifications?",
- response: "What specific features are required for the booking system — calendar view, GCash payment, email confirmations, or a dashboard for you to manage sessions?",
- covered: (a) => /calendar|gcash.*booking|payment.*booking|dashboard|notification/.test(a),
- },
- {
- tip: "Ask which pages he envisions — Home, Services, Booking, Testimonials?",
- response: "What pages do you have in mind? For example: Home, About you, Services with pricing, Booking page, and Testimonials?",
- covered: (a) => /services.*page|booking.*page|testimonials|about.*page/.test(a),
- },
- {
- tip: "He wants professional — ask if he has brand assets like a logo or existing colors.",
- response: "Do you have an existing logo or brand colors I should follow? Or should I suggest a professional design?",
- covered: (a) => /logo|brand.*color|professional.*design|blue|green|dark/.test(a),
- },
- {
- tip: "Ask if parents or students book directly — this affects the UX design.",
- response: "Who typically books sessions — students themselves, or their parents? This will affect how I design the booking flow.",
- covered: (a) => /parents.*book|students.*book|who.*book|book.*who/.test(a),
- },
- {
- tip: "Ask for his exact launch deadline — he mentioned the next school term.",
- response: "When exactly is the next school term starting? I want to confirm the deadline before committing to a timeline.",
- covered: (a) => /school term|term.*start|launch.*date|3 weeks|4 weeks/.test(a),
- },
- {
- tip: "Confirm if the ₱12,000 includes revisions and the booking system backend.",
- response: "Just to confirm — does the ₱12,000 include the booking backend and at least two rounds of revisions? I want to align scope before writing the proposal.",
- covered: (a) => /12,000|revision.*included|backend.*included|scope.*confirm/.test(a),
- },
- ],
+  "Maria Santos": [
+    // 1. Business overview
+    {
+      tip: "Start by asking your client to describe their business and project — get the full picture first.",
+      response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
+      covered: (a) => /karinderya|food business|menu.*website|5 taon|nagtatanong.*facebook/.test(a),
+    },
+    // 2. Problem / pain point
+    {
+      tip: "Dig into the pain point — why does she need a website right now?",
+      response: "Naiintindihan ko po! Bakit po kaya nagta-DM pa rin yung mga customers ninyo — wala ba silang makita online ngayon?",
+      covered: (a) => /messenger|dm|nagtatanong|customers.*message|miss.*order/.test(a),
+    },
+    // 3. Business tagline & address (Business Info)
+    {
+      tip: "Ask for her business tagline/slogan and exact address — these go on the website.",
+      response: "May slogan o tagline po ba ang Santos Karinderya? At ano po yung exact address ng tindahan para ilagay natin sa website?",
+      covered: (a) => /slogan|tagline|address|blk|lot|barangay|street|saan.*kayo/.test(a),
+    },
+    // 4. Contact info (Business Info)
+    {
+      tip: "Collect her contact number and email — visitors need a way to reach her.",
+      response: "Para sa website po — anong contact number at email address ang pwedeng i-contact ng mga customers ninyo?",
+      covered: (a) => /0917|0912|0999|09\d{9}|gmail|email|contact number|numero/.test(a),
+    },
+    // 5. Main goal of website (Goals & Purpose)
+    {
+      tip: "Clarify the website's main goal — menu display only, or also handle inquiries?",
+      response: "Ano po yung pangunahing gusto ninyong mangyari sa website — para lang ma-view ng menu, o gusto rin ninyong may inquiry o contact feature?",
+      covered: (a) => /goal|layunin|display lang|view.*menu|menu.*view|contact.*feature/.test(a),
+    },
+    // 6. Call to action (Goals & Purpose)
+    {
+      tip: "Ask what action you want visitors to take — call, visit the store, or message?",
+      response: "Kapag nakita ng customer ang website ninyo — ano ang gusto ninyong gawin nila next? Tumawag? Pumunta sa tindahan? O mag-message?",
+      covered: (a) => /tumawag|call|pumunta|visit|action|button|cta/.test(a),
+    },
+    // 7. Pages needed (Pages & Content)
+    {
+      tip: "List out what pages she needs — Home, Menu, About, Contact?",
+      response: "Anong mga pages po ang gusto ninyong kasama sa website? Halimbawa: Home, Menu, About us, Contact?",
+      covered: (a) => /home.*menu|about|contact|pages/.test(a),
+    },
+    // 8. Existing content — photos, written menu (Pages & Content)
+    {
+      tip: "Ask if she has existing photos and menu content, or if you need to create it.",
+      response: "May mga larawan na po ba kayo ng pagkain at ng tindahan? At yung menu — may written list na ba o kailangan pa itong i-type?",
+      covered: (a) => /larawan|photo|litrato|menu.*list|written|content|wala pa/.test(a),
+    },
+    // 9. Logo (Design & Branding)
+    {
+      tip: "Ask if she has a logo file — this is required before you start designing.",
+      response: "May logo na po ba ang Santos Karinderya? Kung meron, may digital file ba kayo — PNG or JPG? Kung wala pa, pwede rin nating gumawa.",
+      covered: (a) => /logo|icon|wala.*logo|logo.*wala|naka-digitize|digital.*file/.test(a),
+    },
+    // 10. Design colors & style (Design & Branding)
+    {
+      tip: "Ask about preferred colors and overall feel — warm and appetizing works for food.",
+      response: "May preferred colors po ba kayo para sa website? Yung maganda para sa food business — warm tones like orange or yellow? At anong overall feel — simple, masaya, o classic?",
+      covered: (a) => /orange|yellow|warm|color.*prefer|feel.*site|style.*site/.test(a),
+    },
+    // 11. Reference websites (Design & Branding)
+    {
+      tip: "Ask for a reference website she likes — it makes design decisions much faster.",
+      response: "May nakita po ba kayong website — kahit food business sa ibang lugar — na gusto ninyong maging katulad ang dating ng inyo?",
+      covered: (a) => /reference|max's|jollibee|nakita.*website|website.*gusto|example/.test(a),
+    },
+    // 12. Features & functionality details (Features)
+    {
+      tip: "Ask about additional features — Google Maps, contact form, social links, newsletter.",
+      response: "May gusto pa po ba kayong features? Halimbawa: Google Maps para malaman ng customers kung nasaan kayo, contact form, o Facebook page link sa website?",
+      covered: (a) => /google.*map|map|contact form|newsletter|facebook.*link|social.*link/.test(a),
+    },
+    // 13. Domain & hosting (Technical)
+    {
+      tip: "Ask if she has a domain name already, or if you'll handle registration and hosting.",
+      response: "May domain name na po ba kayo — katulad ng 'santoskarinderya.com'? O wala pa, at ikaw ang mag-a-arrange ng domain at hosting?",
+      covered: (a) => /domain|hosting|\.com|website.*address|wala.*domain/.test(a),
+    },
+    // 14. SEO & legal (Technical)
+    {
+      tip: "Ask if she wants Google visibility (SEO) and whether a Privacy Policy page is needed.",
+      response: "Gusto po ba ninyong makita ang website sa Google pag nag-search ng 'karinderya'? At kailangan ba ng Privacy Policy page sa site?",
+      covered: (a) => /google|seo|search|privacy|policy|makita.*google/.test(a),
+    },
+    // 15. Target audience & device (Mobile & Performance)
+    {
+      tip: "Confirm who her customers are and what device they use — critical for mobile design.",
+      response: "Sino po mostly yung mga customers ninyo — mga taga-kapitbahay ba? At mostly phone ba sila o laptop ang ginagamit nila?",
+      covered: (a) => /kapitbahay|phone|mobile|laptop|device|customers/.test(a),
+    },
+    // 16. Timeline (Timeline & Budget)
+    {
+      tip: "Ask for a target launch date — she hinted at an upcoming event.",
+      response: "Kelan po kailangan ang website? May specific na petsa o may darating na event na gusto ninyong ready na yung site?",
+      covered: (a) => /2 weeks|next month|event|kailan|launch.*date|petsa/.test(a),
+    },
+    // 17. Budget & revisions (Timeline & Budget)
+    {
+      tip: "Confirm what's included in her ₱5,000 — revisions, hosting, domain?",
+      response: "Yung ₱5,000 po — kasama na ba doon yung revisions, o separate? At sino ang magma-maintain ng website pagkatapos?",
+      covered: (a) => /5,000|revision.*kasama|maintain|after.*launch|magkano/.test(a),
+    },
+    // 18. Assets to collect (Assets)
+    {
+      tip: "Before closing discovery, confirm what files she will send you — logo, photos, content.",
+      response: "Para makapagsimula na ako ng proposal — puwede ba ninyong i-list kung anong files ang maibibibigay ninyo? Logo, larawan ng pagkain, at written menu.",
+      covered: (a) => /susend|magse-send|ibibigay|files|assets|larawan.*send|logo.*send/.test(a),
+    },
+  ],
+
+  "Kuya Jun": [
+    // 1. Business overview
+    {
+      tip: "Start by asking your client to describe their business and project — get the full picture first.",
+      response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
+      covered: (a) => /cellphone|accessories|snacks|online.*sell|tinda|shopee|catalog.*products/.test(a),
+    },
+    // 2. Problem / pain point
+    {
+      tip: "Ask how the current order system is failing him — missed orders, no product list?",
+      response: "Ano pong specific na problema sa proseso ninyo ngayon — paano kayo nakaka-miss ng orders?",
+      covered: (a) => /miss.*order|nakaka-miss|chat.*lang|walang.*listahan|disorganized/.test(a),
+    },
+    // 3. Business name, tagline & address (Business Info)
+    {
+      tip: "Ask for his exact business name, any tagline, and location — basic info for the site.",
+      response: "Para sa website — ano ang exact na pangalan ng business ninyo? May tagline ba? At saan po kayo nakabase?",
+      covered: (a) => /jun online|tagline|caloocan|address|barangay|location/.test(a),
+    },
+    // 4. Contact info (Business Info)
+    {
+      tip: "Get his contact number and whether he has an email — even just for the website footer.",
+      response: "Anong contact number po ang ilalagay natin sa website? At may email ba kayo o Messenger lang ang gagamitin?",
+      covered: (a) => /0912|0917|09\d{9}|gmail|email|messenger.*lang|number/.test(a),
+    },
+    // 5. Main goal of website (Goals & Purpose)
+    {
+      tip: "Clarify the website's main goal — catalog only, or also process orders directly?",
+      response: "Ano po yung pangunahing gusto ninyong mangyari sa website — para lang makita ng buyers ang products, o gusto rin ninyong may order/payment feature?",
+      covered: (a) => /catalog.*lang|goal|purpose|makita.*products|order.*feature|payment.*feature/.test(a),
+    },
+    // 6. Call to action (Goals & Purpose)
+    {
+      tip: "Ask what action buyers should take after browsing — message him, or order via GCash?",
+      response: "Kapag gusto na nilang mag-order — ano yung gusto ninyong gawin nila? Mag-message sa Messenger? O direct GCash payment?",
+      covered: (a) => /mag-message|dm|order.*gcash|gcash.*order|action|button/.test(a),
+    },
+    // 7. Pages needed (Pages & Content)
+    {
+      tip: "Ask which pages he needs — he'll want Products first, maybe Home.",
+      response: "Anong pages po ang priority? Products page lang muna, o kailangan din ng Home at About?",
+      covered: (a) => /products page|home|pages|priority.*page/.test(a),
+    },
+    // 8. Existing content (Pages & Content)
+    {
+      tip: "Ask if he has existing product photos and descriptions — he has Shopee listings.",
+      response: "May product photos na po ba kayo? Yung mga Shopee listing photos ninyo — pwede ba yun gamitin? At yung descriptions, meron na ba?",
+      covered: (a) => /shopee.*photo|product.*photo|photos.*na|description.*meron|listing/.test(a),
+    },
+    // 9. Logo (Design & Branding)
+    {
+      tip: "Ask if he has a logo or just a text name — you may need to make a simple one.",
+      response: "May logo po ba kayo para sa 'Jun Online Shop'? O text lang yung gagamitin natin?",
+      covered: (a) => /logo|wala.*logo|text.*lang|brand.*icon|icon/.test(a),
+    },
+    // 10. Design colors & style (Design & Branding)
+    {
+      tip: "Ask about preferred colors — he'll likely say something bold and simple.",
+      response: "May preferred colors po ba kayo? Simple lang — asul, pula, o may existing brand color yung tindahan ninyo?",
+      covered: (a) => /asul|pula|blue|red|color.*prefer|simple.*design/.test(a),
+    },
+    // 11. Reference websites (Design & Branding)
+    {
+      tip: "Ask for a reference site — Shopee or Lazada layouts work well as references for him.",
+      response: "May nakita po ba kayong website — o kahit Shopee/Lazada layout — na gusto ninyong maging katulad ang dating ng inyo?",
+      covered: (a) => /shopee.*look|lazada|reference|example.*site|dating.*gusto/.test(a),
+    },
+    // 12. Features & functionality (Features)
+    {
+      tip: "Ask about GCash payment, search bar, or any other features he wants.",
+      response: "May gusto pa po ba kayong features? GCash payment button? Search bar para madaling hanapin ng buyers ang product? O iba pa?",
+      covered: (a) => /gcash|payment|search.*bar|filter|feature.*gusto/.test(a),
+    },
+    // 13. Domain & hosting (Technical)
+    {
+      tip: "Ask if he has a domain, or if you'll set it up — mention it affects cost.",
+      response: "May domain name na po ba kayo — katulad ng 'junonlineshop.com'? O wala pa, at gusto ninyong kasama yun sa project?",
+      covered: (a) => /domain|hosting|\.com|wala.*domain|address.*website/.test(a),
+    },
+    // 14. SEO & legal (Technical)
+    {
+      tip: "Ask if he wants to appear in Google search results and if a Privacy Policy is needed.",
+      response: "Gusto ba ninyong makita ang website sa Google — katulad ng 'cellphone accessories Caloocan'? At kailangan ba ng Privacy Policy?",
+      covered: (a) => /google|seo|search|privacy|policy|makita.*google/.test(a),
+    },
+    // 15. Target audience & device (Mobile & Performance)
+    {
+      tip: "Confirm his buyers are mostly young and mobile — this drives design decisions.",
+      response: "Yung mga buyers ninyo — mostly kabataan ba sa phone? Para masigurado ang mobile-first design.",
+      covered: (a) => /kabataan|young|phone|mobile|tiktok|device/.test(a),
+    },
+    // 16. Timeline (Timeline & Budget)
+    {
+      tip: "He said ASAP — pin down the exact number of days before agreeing.",
+      response: "Sinabi ninyong ASAP — ilang araw o linggo ang exact na target? Bago ako mag-commit gusto kong malinaw yung deadline.",
+      covered: (a) => /1 week|7 days|isang linggo|deadline.*days|within/.test(a),
+    },
+    // 17. Budget & revisions (Timeline & Budget)
+    {
+      tip: "Confirm if ₱8,000 is fixed and how many revision rounds are included.",
+      response: "Yung ₱8,000 — fixed po ba yun o may flexibility pa? At ilan po ang revision rounds na kasama?",
+      covered: (a) => /8,000|fixed|revision.*kasama|rounds.*kasama/.test(a),
+    },
+    // 18. Assets to collect (Assets)
+    {
+      tip: "Before finishing discovery, confirm what files he will send — photos, product list.",
+      response: "Para makapagsimula na ako — puwede ba ninyong i-send yung product photos at descriptions? Ilan products ang ilalagay natin sa catalog?",
+      covered: (a) => /susend|i-send|photos.*send|products.*list|30 products|ilang.*products/.test(a),
+    },
+  ],
+
+  "Ate Bea": [
+    // 1. Business overview
+    {
+      tip: "Start by asking your client to describe their business and project — get the full picture first.",
+      response: "Bago tayo magsimula, pwede po bang ikwento sa akin yung inyong business at ang project na gusto ninyong gawin? Gusto ko munang maunawaan ang buong picture bago tayo mag-dive in sa details.",
+      covered: (a) => /bea.thrift|pre-loved|instagram.*fashion|boutique|thrift/.test(a),
+    },
+    // 2. Problem / pain point
+    {
+      tip: "Ask what's specifically wrong with her Instagram setup — why isn't it enough?",
+      response: "Para mas maintindihan — ano pong specific na problema sa Instagram setup ninyo ngayon na kaya kailangan ng proper website?",
+      covered: (a) => /feed.*dumi|dumi.*feed|hindi.*professional|disorganized|proper.*website/.test(a),
+    },
+    // 3. Business tagline & location (Business Info)
+    {
+      tip: "Ask for her brand tagline and where she's based — sets the tone for the whole site.",
+      response: "May brand tagline ka ba? Like a short line that captures your vibe? At saan ka nakabase — for the 'About me' section?",
+      covered: (a) => /tagline|slogan|wear the story|marikina|location|nakabase/.test(a),
+    },
+    // 4. Contact info (Business Info)
+    {
+      tip: "Get her email and Instagram handle — these should be visible on every page.",
+      response: "Anong email at Instagram handle ang ilalagay natin sa website para makontak ka ng buyers?",
+      covered: (a) => /email|bea.thrift@|@bea|contact.*info|handle.*bea/.test(a),
+    },
+    // 5. Main goal of website (Goals & Purpose)
+    {
+      tip: "Clarify what the website should do — lookbook showcase, online shop, or brand presence?",
+      response: "Ano pong pangunahing purpose ng website — para lang may proper brand presence, o gusto rin ninyong may actual shop na makakabili agad ang customers?",
+      covered: (a) => /brand.*presence|purpose|goal|lookbook.*goal|shop.*goal|showcase/.test(a),
+    },
+    // 6. Call to action (Goals & Purpose)
+    {
+      tip: "Ask what buyers should do after browsing — DM on Instagram, email, or order direct?",
+      response: "Kapag gusto na nilang bumili ng item — ano yung gusto mong gawin nila? Mag-DM sa Instagram? Mag-email? O may checkout ba?",
+      covered: (a) => /dm.*instagram|mag-dm|order.*dm|action|checkout|contact.*buy/.test(a),
+    },
+    // 7. Pages needed (Pages & Content)
+    {
+      tip: "List out the pages — she mentioned Home, Lookbook, Shop, About, Contact.",
+      response: "Anong mga pages ang gusto mo? Home, Lookbook, Shop, About me, Contact? May iba pa ba?",
+      covered: (a) => /lookbook|home.*shop|about.*me|contact.*page|pages/.test(a),
+    },
+    // 8. Existing content — photos (Pages & Content)
+    {
+      tip: "Ask if her Instagram photos can be used, or if she'll shoot new ones.",
+      response: "Yung mga photos mo — yung Instagram posts mo, pwede ba yun gamitin para sa website? O mag-shoot ka ng bago para mas professional?",
+      covered: (a) => /instagram.*photo|photos.*na|200.*items|mag-shoot|existing.*photos/.test(a),
+    },
+    // 9. Logo (Design & Branding)
+    {
+      tip: "Ask if she has a logo — she likely doesn't, and may want you to design one.",
+      response: "May logo ka na ba para sa brand? O wala pa — gusto mo bang gumawa tayo ng logo as part of the project?",
+      covered: (a) => /logo.*wala|wala.*logo|gumawa.*logo|logo.*kasama|brand.*logo/.test(a),
+    },
+    // 10. Design colors & style (Design & Branding)
+    {
+      tip: "She's indecisive about colors — lock it down now before design starts.",
+      response: "Para maisagawa na natin — ano yung final na color palette? Beige base? Dusty rose? Sage green? Piliin na natin ngayon para hindi na magbago-bago.",
+      covered: (a) => /beige|dusty rose|sage|color.*final|palette|final.*color/.test(a),
+    },
+    // 11. Reference websites (Design & Branding)
+    {
+      tip: "Ask for specific reference sites — she'll likely mention Depop or ZARA.",
+      response: "May specific na website na gusto mong maging katulad ang dating ng inyo? Kahit fashion brand sa abroad — para ma-capture natin yung aesthetic.",
+      covered: (a) => /depop|zara|reference.*site|website.*like|inspiration/.test(a),
+    },
+    // 12. Features & functionality (Features)
+    {
+      tip: "Ask about newsletter, Instagram feed embed, contact form — she'll want all of these.",
+      response: "May gusto ka pang features? Newsletter para ma-notify ang buyers ng bagong items? Instagram feed embed sa homepage? Contact form?",
+      covered: (a) => /newsletter|instagram.*feed|embed|contact.*form|features.*gusto/.test(a),
+    },
+    // 13. Domain & hosting (Technical)
+    {
+      tip: "Ask about domain — she'll want something cute like beathrift.shop or beathrift.com.",
+      response: "May domain na ba ka? Gusto mo bang 'beathrift.com' o baka 'bea-thrift.shop'? At sino ang mag-a-arrange ng hosting?",
+      covered: (a) => /domain|\.com|\.shop|hosting|beathrift|wala.*domain/.test(a),
+    },
+    // 14. SEO & legal (Technical)
+    {
+      tip: "Ask about Google visibility and Privacy Policy — she collects buyer data via DMs.",
+      response: "Gusto mo bang makita ang site sa Google — katulad ng 'pre-loved clothes Philippines'? At kailangan ba ng Privacy Policy kasi may personal info ng buyers?",
+      covered: (a) => /google|seo|search.*engine|privacy.*policy|legal/.test(a),
+    },
+    // 15. Target audience & device (Mobile & Performance)
+    {
+      tip: "Confirm her buyers are Gen Z girls on mobile — this drives the whole design direction.",
+      response: "Sino mostly yung mga buyers mo — Gen Z girls ba sa Instagram? At mostly phone sila nagbi-browse?",
+      covered: (a) => /gen z|girls|age.*16|16.*30|phone.*browse|mobile.*buyer/.test(a),
+    },
+    // 16. Timeline (Timeline & Budget)
+    {
+      tip: "Lock down a real deadline — she said quality over speed but you need a date.",
+      response: "Para maayos ang timeline — kahit approximate, kailan gusto mong ma-launch? At ilang rounds of revision ang inaasahan mo?",
+      covered: (a) => /3 weeks|launch.*date|revision.*rounds|deadline|petsa/.test(a),
+    },
+    // 17. Budget & revisions (Timeline & Budget)
+    {
+      tip: "Confirm if ₱6,500 is firm — she hints she might add more, clarify that now.",
+      response: "Yung ₱6,500 — firm ba yun? Lagi kang may bagong gusto i-add, so gusto ko lang maging malinaw sa budget bago tayo magpatuloy.",
+      covered: (a) => /6,500|firm.*budget|budget.*firm|extra.*budget/.test(a),
+    },
+    // 18. Assets to collect (Assets)
+    {
+      tip: "Before wrapping discovery, confirm what files she will provide — photos, logo, About me copy.",
+      response: "Bago ako gumawa ng proposal — anong files ang maibibigay mo? Product photos, logo (if any), at yung About me story?",
+      covered: (a) => /google.*drive|files.*send|photo.*send|susend|drive.*link|assets/.test(a),
+    },
+  ],
+
+  "Sir Ramon": [
+    // 1. Business overview
+    {
+      tip: "Start by asking your client to describe their business and project — get the full picture first.",
+      response: "Before we begin, could you give me a full picture of your tutoring business and what you're hoping to build? I'd like to understand everything before we get into details.",
+      covered: (a) => /tutor|booking|double book|15.*student|20.*student|school term/.test(a),
+    },
+    // 2. Problem / pain point
+    {
+      tip: "Ask how the current booking system is failing — double bookings, missed payments?",
+      response: "How exactly is the current system failing you — are there double bookings, missed payments, or something else?",
+      covered: (a) => /double.*book|missed.*payment|disorganized|text.*call|manual.*book/.test(a),
+    },
+    // 3. Business tagline & location (Business Info)
+    {
+      tip: "Ask for his professional tagline and whether to display his location on the site.",
+      response: "Do you have a professional tagline or motto? And should we display your city or address on the website for parents to find you?",
+      covered: (a) => /tagline|learn.*confidence|pasig|location.*site|address.*site/.test(a),
+    },
+    // 4. Contact info (Business Info)
+    {
+      tip: "Get his contact number and email — parents will use these to follow up on bookings.",
+      response: "What contact number and email should we display on the site for parents to reach you?",
+      covered: (a) => /0998|email.*ramon|contact.*number|gmail.*tutor|phone.*number/.test(a),
+    },
+    // 5. Main goal of website (Goals & Purpose)
+    {
+      tip: "Clarify the main goal — eliminate phone bookings and let parents self-schedule online.",
+      response: "What's the primary goal of this website — to let parents book without calling you, track payments, or both?",
+      covered: (a) => /primary.*goal|eliminate.*call|self.*book|goal.*website|no.*more.*call/.test(a),
+    },
+    // 6. Call to action (Goals & Purpose)
+    {
+      tip: "Ask what action you want visitors to take — book a session directly from the site.",
+      response: "What's the main action you want parents to take when they visit the site — book a session immediately, or contact you first?",
+      covered: (a) => /book.*session|book.*immediately|contact.*first|action.*parent|cta/.test(a),
+    },
+    // 7. Pages needed (Pages & Content)
+    {
+      tip: "List the pages he needs — Home, About, Services, Booking, Testimonials.",
+      response: "What pages do you have in mind? For example: Home, About (credentials), Services with pricing, Booking page, and Testimonials?",
+      covered: (a) => /services.*page|booking.*page|testimonials|credentials|pages/.test(a),
+    },
+    // 8. Existing content (Pages & Content)
+    {
+      tip: "Ask if he has written bio, credentials, and testimonials ready — or still collecting.",
+      response: "Do you have your bio and credentials written out? And for testimonials — do you have feedback from past parents or will you need to collect those?",
+      covered: (a) => /bio.*ready|credentials.*ready|testimonials.*collect|written.*bio|feedback.*parents/.test(a),
+    },
+    // 9. Logo (Design & Branding)
+    {
+      tip: "Ask if he has a logo or if you'll create a simple professional one from his initials.",
+      response: "Do you have an existing logo, or should I design a simple professional one — perhaps using your initials in a clean font?",
+      covered: (a) => /logo.*wala|no.*logo|initials|r\.g\.t|design.*logo|professional.*logo/.test(a),
+    },
+    // 10. Design colors & style (Design & Branding)
+    {
+      tip: "He wants professional — confirm exact color direction before designing.",
+      response: "You mentioned professional and trustworthy — should we go with navy blue, dark green, or a different color scheme? Any fonts or styles to avoid?",
+      covered: (a) => /navy|dark.*green|blue.*confirm|color.*scheme|no.*bright|professional.*color/.test(a),
+    },
+    // 11. Reference websites (Design & Branding)
+    {
+      tip: "Ask for reference sites — tutoring platforms abroad tend to be clean and structured.",
+      response: "Have you seen any tutoring or education websites you like the look of? Any specific layout or structure you'd want to reference?",
+      covered: (a) => /varsity|clean.*tutor|reference.*site|website.*like|layout.*reference/.test(a),
+    },
+    // 12. Features & functionality (Features)
+    {
+      tip: "Confirm the full feature list — booking calendar, GCash, dashboard, email notifications.",
+      response: "Beyond the booking calendar and GCash — do you also need email notifications when a session is booked, a dashboard for you to manage sessions, or a FAQ section?",
+      covered: (a) => /email.*notification|dashboard|faq|manage.*session|notification.*book/.test(a),
+    },
+    // 13. Domain & hosting (Technical)
+    {
+      tip: "Ask about domain and hosting — mention it should be factored into the budget.",
+      response: "Do you have a domain name already — like 'ramontutor.com'? If not, should I include domain registration and one year of hosting in the project cost?",
+      covered: (a) => /domain|ramontutor|hosting|\.com|register.*domain|domain.*cost/.test(a),
+    },
+    // 14. SEO & legal (Technical)
+    {
+      tip: "He needs SEO for 'Math tutor Pasig' and a Privacy Policy since he collects parent data.",
+      response: "Do you want the site to appear in Google search for terms like 'Math tutor Pasig'? And since you'll be collecting parent contact info, you'll need a Privacy Policy page.",
+      covered: (a) => /seo|google.*search|math.*tutor|privacy.*policy|collect.*info/.test(a),
+    },
+    // 15. Target audience & device (Mobile & Performance)
+    {
+      tip: "Confirm who books — parents on desktop or mobile — this affects booking UX.",
+      response: "Who typically books sessions — students themselves or their parents? And do they mostly use desktop or mobile? This affects how I design the booking flow.",
+      covered: (a) => /parents.*book|students.*book|desktop.*book|mobile.*book|who.*book/.test(a),
+    },
+    // 16. Timeline (Timeline & Budget)
+    {
+      tip: "Confirm the exact school term start date — his deadline depends on it.",
+      response: "When exactly does the next school term start? I want to confirm the hard deadline before committing to a timeline.",
+      covered: (a) => /school term|term.*start|3 weeks|4 weeks|launch.*date|exact.*deadline/.test(a),
+    },
+    // 17. Budget & revisions (Timeline & Budget)
+    {
+      tip: "Confirm what ₱12,000 covers — backend, revisions, domain, hosting.",
+      response: "Just to confirm — does the ₱12,000 cover the booking backend, at least two revision rounds, and domain/hosting? I want to align scope before writing the proposal.",
+      covered: (a) => /12,000|revision.*included|backend.*cost|scope.*confirm|domain.*included/.test(a),
+    },
+    // 18. Assets to collect (Assets)
+    {
+      tip: "Before finishing discovery, confirm what documents he will send you.",
+      response: "Before I write the proposal — what documents will you be sending me? Bio, credentials, service rates, testimonials, and any photos?",
+      covered: (a) => /word.*document|bio.*send|credentials.*send|rates.*send|assets.*send|files.*prepare/.test(a),
+    },
+  ],
 };
 
 function getPersonaTopics(persona: ClientPersona): TopicEntry[] {
