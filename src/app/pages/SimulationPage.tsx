@@ -1675,24 +1675,23 @@ export default function SimulationPage() {
           </div>
         </div>
         <div className="space-y-2">
-          <label className="text-xs font-semibold" style={{ color: "#65676B" }}>UI/UX Prompt (edit if needed)</label>
+          <label className="text-xs font-semibold" style={{ color: "#65676B" }}>UI/UX Prompt — edit and regenerate anytime</label>
           <textarea
             value={uiPrompt}
             onChange={(e) => setUiPrompt(e.target.value)}
-            className="w-full p-4 text-sm outline-none resize-none rounded-2xl border"
-            style={{ minHeight: "120px", background: "#fff", borderColor: "rgba(0,0,0,0.12)", fontFamily: "monospace", fontSize: "12px" }}
+            className="w-full p-4 text-sm outline-none resize-y rounded-2xl border"
+            style={{ minHeight: "140px", background: "#fff", borderColor: "rgba(0,0,0,0.12)", fontFamily: "monospace", fontSize: "12px" }}
           />
         </div>
-        {!generatedHtml ? (
-          <button
-            onClick={generateWebsite}
-            disabled={building || !uiPrompt.trim()}
-            className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-            style={{ background: "#8B5CF6", color: "#fff" }}
-          >
-            {building ? <><Loader2 className="w-5 h-5 animate-spin" /> Building website...</> : <><Sparkles className="w-5 h-5" /> Generate Website</>}
-          </button>
-        ) : (
+        <button
+          onClick={() => { setGeneratedHtml(""); setBuildLink(""); generateWebsite(); }}
+          disabled={building || !uiPrompt.trim()}
+          className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+          style={{ background: "#8B5CF6", color: "#fff" }}
+        >
+          {building ? <><Loader2 className="w-5 h-5 animate-spin" /> Building website...</> : generatedHtml ? <><Sparkles className="w-5 h-5" /> Regenerate Website</> : <><Sparkles className="w-5 h-5" /> Generate Website</>}
+        </button>
+        {generatedHtml && (
           <div className="space-y-4">
             <div className="rounded-2xl overflow-hidden border shadow-sm" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
               <div className="flex items-center justify-between px-4 py-2" style={{ background: "#1a1a1a" }}>
@@ -1705,10 +1704,11 @@ export default function SimulationPage() {
                 </a>
               </div>
               <iframe
+                key={buildLink}
                 srcDoc={generatedHtml}
                 sandbox="allow-scripts allow-same-origin"
                 className="w-full border-0"
-                style={{ height: "420px" }}
+                style={{ height: "480px" }}
                 title="Website Preview"
               />
             </div>
