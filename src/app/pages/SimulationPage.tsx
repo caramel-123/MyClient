@@ -729,7 +729,7 @@ export default function SimulationPage() {
     const clientSignaledReady = /sige|go na|deal|proposal|proceed|start na|magsimula na|tara na|ready na/.test(lastReply);
     const nowCovered = coveredTopicIndex(updated, persona) >= getPersonaTopics(persona).length;
     if (clientSignaledReady && nowCovered) {
-      setTimeout(() => jumpToPhase("proposal"), 1200);
+      setTimeout(() => jumpToPhase("proposal", true), 1200);
     }
   }
 
@@ -775,7 +775,7 @@ export default function SimulationPage() {
     }
     const next = PHASE_ORDER[nextIndex];
     if (!tabUnlocked[next] && next !== "proposal") return; // guard locked tabs
-    jumpToPhase(next);
+    jumpToPhase(next, true); // sequential advance always allowed
   }
 
   async function sendProposalToClient() {
@@ -969,8 +969,8 @@ export default function SimulationPage() {
  setProposalFields((prev) => prev.map((f, idx) => (idx === i ? v : f)));
  }
 
-  function jumpToPhase(p: Phase) {
-    if (!tabUnlocked[p] && p !== "delivery") return; // locked
+  function jumpToPhase(p: Phase, force = false) {
+    if (!force && !tabUnlocked[p] && p !== "delivery") return; // locked
     setPhase(p);
     setContextualTip(null);
     setContextualResponse(null);
