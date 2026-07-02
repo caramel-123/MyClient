@@ -196,9 +196,7 @@ function Nav() {
  <div className= "max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
  {/* Logo */}
  <div className= "flex items-center gap-2">
- <div className= "w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#F5C542" }}>
- <MessageCircle className= "w-4 h-4" style={{ color: "#2D2D2D" }} />
- </div>
+ <img src="/logo.png" alt="MyClient" className="w-8 h-8 object-contain" />
  <span className= "text-lg font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>
  MyClient
  </span>
