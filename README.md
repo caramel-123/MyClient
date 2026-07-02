@@ -1,4 +1,5 @@
 # MyClient 🐦
+Pulsar - Melfred Bernabe
 
 **AI-Powered Client Simulation Platform for Student Freelancers**
 
