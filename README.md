@@ -241,4 +241,4 @@ This project was built for **SparkFest 2026**, a flagship hackathon by **GDG PUP
 
 **Melfred Bernabe** — Solo developer, UI/UX, AI integration, simulation design
 
-*Built with Claude Code · SparkFest 2026 · GDG PUP × DOST PUP Pylon*
+SparkFest 2026 · GDG PUP × DOST PUP Pylon*
