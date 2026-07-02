@@ -1,99 +1,237 @@
-# MyClient — SparkFest 2026
+# MyClient 🐦
 
-> AI-powered freelance client simulation platform for Filipino students and youth.
+**AI-Powered Client Simulation Platform for Student Freelancers**
 
-MyClient is a SparkFest 2026 hackathon entry that lets students practice real-world client communication by chatting with an AI that behaves exactly like a real Filipino client — vague at first, adds scope creep, requests revisions, and eventually pays out or walks away.
+> *"Practice the client. Not just the code."*
 
-**Theme:** Building Smarter, Safer, and More Inclusive Communities
-**SDGs:** SDG 9 (Industry, Innovation & Infrastructure) · SDG 11 (Sustainable Cities & Communities)
-**Google Technology:** Gemini 2.0 Flash API
+MyClient is a web-based simulation platform built for **SparkFest 2026**. It helps IT and CS students practice the full freelance lifecycle — discovery, proposals, revisions, and delivery — through realistic AI client conversations powered by Google Gemini.
 
----
-
-## The Problem
-
-Most CS/IT students graduate knowing how to code but not how to communicate with clients — how to ask the right questions, scope a project, write a proposal, handle revisions, and deliver professionally. MyClient bridges that gap through simulation.
-
-## How It Works
-
-The AI messages **you** first — just like a real client would.
-
-```
-AI Client: "Hi! Pwede mo ba akong tulungan? Gusto ko magpagawa ng website
-            para sa aking food business. Budget ko ₱5,000. 😊"
-
-Tip: Ask what problem they're currently facing before jumping to solutions.
-
-You: "Sure po! Bago tayo magsimula, pwede po bang ikwento sa akin yung
-      inyong business at ang project na gusto ninyong gawin?"
-
-AI Client: "Sige po, ikukwento ko! So nagtatakbo kami ng maliit na
-            karinderya dito sa aming barangay — 'Santos Karinderya'..."
-```
+🌐 **Live Demo:** https://myclient-sparkfest.web.app
 
 ---
 
-## Phases
+## What is MyClient?
 
-| Phase | What Happens |
-|-------|-------------|
-| **Discovery** | AI client messages you first with a project brief. Ask the right questions to uncover requirements. |
-| **Proposal** | Fill out an 11-section project proposal with AI-generated drafts and a proposal coach. |
-| **QA Review** | Submit a deliverable link. AI switches to reviewer mode — gives specific UI/UX feedback and introduces scope creep. |
-| **Delivery** | Final negotiation. AI accepts, requests revisions, or walks away. Simulated payment released on success. |
+Most CS/IT students graduate knowing how to build software but not how to handle real clients. MyClient fills that gap by putting students through a complete, consequence-free freelance simulation where:
+
+- The **AI messages you first** — just like a real client would
+- You discover requirements, write proposals, handle scope creep, and deliver a project
+- You get scored on **Communication**, **Scope Management**, and **Professionalism**
+- Simulated payment (₱5,000–₱12,000) is only released when the AI client is satisfied
 
 ---
 
-## Key Features
+## Features
 
-- **4 AI Client Personas** — Maria Santos (karinderya), Kuya Jun (online shop), Ate Bea (fashion reseller), Sir Ramon (tutoring)
-- **Gemini 2.0 Flash** — powers all client responses in Taglish with realistic personality
-- **Multi-bubble typing** — client replies arrive in 2–3 separate bubbles with natural delays, like a real person
-- **TipBar** — coaching tips with 3 clickable response options (Standard, Short, Casual)
-- **11-section Proposal Builder** — AI-generated professional paragraphs per section, lightbulb recall from discovery
-- **AI Proposal Coach** — separate Gemini-powered chatbot for writing and refining the proposal
-- **Deal Walkaway** — client escalates anger on rude messages and terminates the deal after 3 strikes
-- **Scope Creep Engine** — client randomly adds features mid-project like a real client would
-- **Invalid Link Detection** — submitting a non-URL in QA triggers client rejection with per-persona reactions
-- **Score Screen** — Communication, Scope Management, and Professionalism scores after each session
+- **AI Client Personas** — 4 realistic Filipino freelance clients (friendly, impatient, indecisive, technical) powered by Gemini 2.0 Flash
+- **4-Phase Simulation** — Discovery → Proposal → Build & QA → Delivery
+- **Taglish Dialogue** — AI clients respond naturally in Filipino-English mix, just like real local clients
+- **Multi-bubble Typing** — Client replies arrive in 2–3 separate bubbles with natural delays
+- **Hint System** — Subtle coaching tips with clickable response suggestions
+- **11-Section Proposal Builder** — AI-generated professional paragraphs with a built-in proposal coach
+- **QA Analyst Mode** — AI switches to hyper-specific UI/UX reviewer after submission
+- **Scope Creep Engine** — AI introduces unexpected feature requests mid-project
+- **Deal Walkaway** — Client escalates and terminates the deal after repeated rude messages
+- **Scoring Dashboard** — Communication, Scope Management, and Professionalism scores per session
+- **Google Authentication** — Sign in with Google via Firebase Auth
+- **Leaderboard** — Top students ranked by simulation score
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Frontend | React + TypeScript + Vite + Tailwind CSS |
-| AI | Gemini 2.0 Flash (REST API, browser-safe) |
+|---|---|
+| Frontend | React 19 + Vite + TypeScript |
+| Styling | Tailwind CSS v4 |
+| AI Engine | Google Gemini 2.0 Flash API |
+| Authentication | Firebase Authentication (Google sign-in) |
 | Routing | React Router v7 |
-| Icons | Lucide React |
-| Hosting | Vercel |
+| Deployment | Firebase Hosting |
+| UI Components | shadcn/ui + Lucide Icons |
+
+---
+
+## AI Client Personas
+
+| Client | Business | Personality | Budget |
+|---|---|---|---|
+| Maria Santos | Food Business (Karinderya) | Friendly but forgetful | ₱5,000 |
+| Kuya Jun | Sari-sari Store / Online Selling | Impatient and vague | ₱8,000 |
+| Ate Bea | Boutique / Fashion Reseller | Indecisive and creative | ₱6,500 |
+| Sir Ramon | Tutoring / Education Services | Technical and detailed | ₱12,000 |
 
 ---
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- A [Google Gemini API key](https://aistudio.google.com/apikey)
+- A [Firebase project](https://console.firebase.google.com) with Authentication enabled
+
+### Installation
+
 ```bash
-npm install
+# Clone the repository
+git clone https://github.com/caramel-123/MyClient.git
+cd MyClient
+
+# Install dependencies
+npm install --legacy-peer-deps
+```
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Gemini API
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+
+# Firebase
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+> **Demo Mode:** Without a Gemini API key, the app runs with pre-written persona responses — fully functional for demos.
+
+### Run Locally
+
+```bash
 npm run dev
 ```
 
-To use the Gemini API (live AI responses), add your key to `.env`:
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-```
-VITE_GEMINI_API_KEY=your_key_here
-```
+### Build for Production
 
-Without an API key, the app runs in **demo mode** with pre-written persona responses — fully functional for demos.
+```bash
+npm run build
+```
 
 ---
 
-## SparkFest 2026 Deliverables
+## Project Structure
 
-- [x] Working prototype (Phase 1 Discovery + Phase 3 QA fully functional)
+```
+src/
+├── app/
+│   ├── lib/
+│   │   ├── gemini.ts            # Gemini API client + AI personas + prompts
+│   │   ├── firebase.ts          # Firebase initialization + auth helpers
+│   │   └── AuthContext.tsx      # Auth state provider
+│   ├── pages/
+│   │   ├── LoginPage.tsx        # Sign in with Google or email
+│   │   ├── SignupPage.tsx       # Multi-step onboarding
+│   │   ├── DashboardPage.tsx    # User dashboard + session history
+│   │   ├── ProjectSelectPage.tsx # Choose your AI client
+│   │   ├── SimulationPage.tsx   # Main chat simulation
+│   │   └── ScorePage.tsx        # Post-session scores
+│   ├── components/
+│   │   └── ui/                  # shadcn/ui components
+│   └── App.tsx                  # Landing page
+├── styles/
+│   └── index.css
+└── main.tsx
+```
+
+---
+
+## Simulation Flow
+
+```
+Landing Page
+    ↓
+Sign Up / Log In (Firebase Auth)
+    ↓
+Dashboard
+    ↓
+Choose Your Client (4 personas)
+    ↓
+Phase 1: Discovery
+  AI messages you first.
+  Uncover real requirements.
+    ↓
+Phase 2: Proposal
+  Write scope + budget.
+  AI negotiates or pushes back.
+    ↓
+Phase 3: Build & QA
+  Submit your work (URL).
+  AI gives specific UI/UX feedback.
+  Scope creep may be triggered.
+    ↓
+Phase 4: Delivery
+  Close the project professionally.
+  Simulated payment released on approval.
+    ↓
+Score Page (Communication / Scope / Professionalism)
+```
+
+---
+
+## Scoring System
+
+After each completed simulation, students are evaluated on:
+
+| Dimension | What it measures |
+|---|---|
+| **Communication** | Clarity, tone, and response quality throughout the project |
+| **Scope Management** | How well the student handled revisions and change requests |
+| **Professionalism** | Negotiation approach, deadlines, and overall conduct |
+
+Scores are stored per session and tracked over time on the personal dashboard.
+
+---
+
+## Deployment
+
+This project is deployed on **Firebase Hosting**:
+
+```bash
+# Build
+npm run build
+
+# Deploy
+npx firebase deploy --only hosting
+```
+
+**Live URL:** https://myclient-sparkfest.web.app
+
+---
+
+## Community Impact
+
+MyClient targets **Students & Youth** — specifically college-level IT, CS, and ICT students who are exploring freelancing but lack real-world client exposure. By simulating the full freelance lifecycle in a consequence-free environment, it builds the confidence and professional habits formal education cannot provide.
+
+Aligned with:
+- **SDG 4** — Quality Education
+- **SDG 8** — Decent Work and Economic Growth
+
+---
+
+## SparkFest 2026
+
+This project was built for **SparkFest 2026**, a flagship hackathon by **GDG PUP × DOST PUP Pylon** that challenges students to create innovative technology-driven solutions for real-world societal and community problems.
+
+**Google Technologies Used:**
+- Google Gemini 2.0 Flash API — AI client engine
+- Firebase Authentication — Google sign-in
+- Firebase Hosting — production deployment
+
+**Submission Checklist:**
+- [x] Working prototype (all 4 phases functional)
 - [x] Gemini API integrated as the AI client brain
 - [x] 4 client personas with distinct personalities and Taglish dialogue
-- [x] Public GitHub repository with commit history
+- [x] Firebase Authentication with Google sign-in
+- [x] Firebase Hosting deployment
+- [x] Public GitHub repository with active commit history
 - [ ] 3-minute video demo
 - [ ] One-page project document (PDF)
 
@@ -101,6 +239,6 @@ Without an API key, the app runs in **demo mode** with pre-written persona respo
 
 ## Team
 
-**Melfred Bernabe** — Solo developer, UI/UX, Gemini integration, client communication simulation design
+**Melfred Bernabe** — Solo developer, UI/UX, AI integration, simulation design
 
-*Built with Claude Code · SparkFest 2026*
+*Built with Claude Code · SparkFest 2026 · GDG PUP × DOST PUP Pylon*

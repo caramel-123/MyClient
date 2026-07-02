@@ -75,11 +75,14 @@ export default function ProjectSelectPage() {
 
       <main className="max-w-5xl mx-auto px-6 py-10">
         {/* Title */}
-        <div className="mb-8 space-y-2">
-          <h1 className="text-3xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>Choose Your Client</h1>
-          <p className="text-base" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>
-            Each simulation is a real project scenario. The AI client will message you first.
-          </p>
+        <div className="mb-8 flex items-center gap-6">
+          <img src="/mascot.png" alt="MyClient mascot" className="w-28 h-28 object-contain flex-shrink-0 drop-shadow-lg" />
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>Choose Your Client</h1>
+            <p className="text-base" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>
+              Each simulation is a real project scenario. The AI client will message you first.
+            </p>
+          </div>
         </div>
 
         {/* Category filter */}
