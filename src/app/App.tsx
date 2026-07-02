@@ -276,7 +276,7 @@ function Hero() {
 
  <div className= "relative max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
  {/* Left */}
- <div className= "space-y-8">
+ <div className= "reveal space-y-8">
  <div className= "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium" style={{ background: "rgba(245,197,66,0.15)", color: "#B8941E", fontFamily: "Inter, sans-serif", border: "1px solid rgba(245,197,66,0.3)" }}>
  <Zap className= "w-3.5 h-3.5" />
  SparkFest 2026 — AI-Powered Learning
@@ -338,7 +338,7 @@ function Hero() {
  </div>
 
  {/* Right — chat preview */}
- <div className= "flex justify-center lg:justify-end">
+ <div className= "reveal flex justify-center lg:justify-end" style={{ transitionDelay: '150ms' } as React.CSSProperties}>
  <div className= "w-full max-w-sm lg:max-w-[360px]">
  <ChatPreview />
  </div>
