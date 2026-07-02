@@ -736,8 +736,7 @@ function Impact() {
  <div
  key={item.title}
  className= "reveal flex gap-5 p-7 rounded-3xl transition-all hover:shadow-lg hover:-translate-y-0.5"
- style={{ transitionDelay: `${i * 100}ms` } as React.CSSProperties}
- style={{ background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}
+ style={{ transitionDelay: `${i * 100}ms`, background: "#FFFFFF", border: "1px solid rgba(45,45,45,0.07)", boxShadow: "0 4px 20px rgba(0,0,0,0.04)" } as React.CSSProperties}
  >
  <div className= "text-3xl flex-shrink-0">{item.emoji}</div>
  <div>

@@ -1,15 +1,40 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { MessageCircle, Mail, ArrowRight, Github } from "lucide-react";
+import { signInWithGoogle, auth } from "../lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleGoogleLogin() {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      navigate("/dashboard");
+    } catch (e: any) {
+      setError("Google sign-in failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    navigate("/dashboard");
+    setError("");
+    try {
+      setLoading(true);
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/dashboard");
+    } catch (e: any) {
+      setError("Invalid email or password.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -79,10 +104,15 @@ export default function LoginPage() {
             <p className="text-base" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>Sign in to continue your simulations</p>
           </div>
 
+          {error && (
+            <p className="text-sm text-red-500 text-center" style={{ fontFamily: "Inter, sans-serif" }}>{error}</p>
+          )}
+
           {/* Google button */}
           <button
-            onClick={() => navigate("/dashboard")}
-            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl font-semibold text-sm transition-all hover:shadow-md active:scale-95"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-2xl font-semibold text-sm transition-all hover:shadow-md active:scale-95 disabled:opacity-60"
             style={{ background: "#FFFFFF", color: "#2D2D2D", border: "1.5px solid rgba(45,45,45,0.12)", fontFamily: "Inter, sans-serif", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">

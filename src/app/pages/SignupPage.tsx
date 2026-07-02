@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { MessageCircle, ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { signInWithGoogle, auth } from "../lib/firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const STEPS = ["Your Info", "Your Role", "Experience"];
 
@@ -8,11 +10,38 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "", experience: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function next(e: React.FormEvent) {
+  async function handleGoogleSignup() {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      navigate("/dashboard");
+    } catch (e: any) {
+      setError("Google sign-in failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function next(e: React.FormEvent) {
     e.preventDefault();
-    if (step < STEPS.length - 1) setStep(step + 1);
-    else navigate("/dashboard");
+    setError("");
+    if (step < STEPS.length - 1) {
+      setStep(step + 1);
+    } else {
+      try {
+        setLoading(true);
+        const cred = await createUserWithEmailAndPassword(auth, form.email, form.password);
+        await updateProfile(cred.user, { displayName: form.name });
+        navigate("/dashboard");
+      } catch (e: any) {
+        setError(e.message || "Signup failed. Try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
   }
 
   const roles = ["CS / IT Student", "Design Student", "Business Student", "Self-taught Developer", "Other"];
@@ -67,10 +96,14 @@ export default function SignupPage() {
                   <h1 className="text-2xl font-bold" style={{ fontFamily: "Poppins, sans-serif", color: "#2D2D2D" }}>Create your account</h1>
                   <p className="text-sm" style={{ fontFamily: "Inter, sans-serif", color: "#6F6A62" }}>Start practicing with AI clients today</p>
                 </div>
+                {error && (
+                  <p className="text-sm text-red-500" style={{ fontFamily: "Inter, sans-serif" }}>{error}</p>
+                )}
                 <button
                   type="button"
-                  onClick={() => navigate("/dashboard")}
-                  className="w-full flex items-center justify-center gap-3 py-3 rounded-2xl text-sm font-medium transition-all hover:shadow-md"
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-3 py-3 rounded-2xl text-sm font-medium transition-all hover:shadow-md disabled:opacity-60"
                   style={{ background: "#F8F2E7", color: "#2D2D2D", fontFamily: "Inter, sans-serif", border: "1.5px solid rgba(45,45,45,0.1)" }}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
